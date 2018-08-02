@@ -246,7 +246,7 @@ void Cell::SetPartition(Partition* p)
 	m_PartitionPtr=p;
 }
 
-void Cell::IncrementGain(Net::Weight w)
+void Cell::IncrementGain(Weight w)
 {
 #ifdef  ALGORITHM_VERBOSE
 	std::cout << "cell " << (IsInLocker()?"L":"B") << " " << GetName() << " Cell::IncrementGain(" << w << ") " << GetGain() << " => " << (GetGain()+w) << std::endl;
@@ -342,7 +342,7 @@ void Bucket::FillByGain(CellList& cl)
 		// We're updating bucket gain, thus fixed cells are not counted
 		// as fixed cells stay in locker
 		if(cellIt->IsFixed()) continue;
-		Net::Weight g=cellIt->GetGain();
+		Weight g=cellIt->GetGain();
 		m_SumGain+=(g);
 		cellIt->MoveToLocker(false); // remove from locker. Failure to do so will result
 			// in wrong updated gains later
@@ -356,8 +356,8 @@ void Bucket::FillByGain(CellList& cl)
 void Bucket::dbg(long id)
 {
 	std::cout << "BUCKET #" << id << " SQ=" << m_Square  << " GAIN=" << GetGain() << std::endl;
-	for(std::map<Net::Weight,CellList>::iterator i=begin();i!=end();i++){
-		Net::Weight g=i->first;
+	for(std::map<Weight,CellList>::iterator i=begin();i!=end();i++){
+		Weight g=i->first;
 		CellList& bl=i->second;
 		std::cout << " Gain " << g << " - " << std::flush;
 		for(const Cell& j:bl){
@@ -368,7 +368,7 @@ void Bucket::dbg(long id)
 }
 #endif
 
-void Bucket::IncrementGain(Net::Weight g)
+void Bucket::IncrementGain(Weight g)
 {
 #ifdef  ALGORITHM_VERBOSE
 	std::cout << "Bucket::IncrementGain g=" << g << std::endl;
@@ -390,7 +390,7 @@ CellList::~CellList()
 	//dtor
 }
 
-Net::Weight CellList::GetSumGain()
+Weight CellList::GetSumGain()
 {
 	if(flags.GainComputed) return m_SumGain;
 	flags.GainComputed=true;
@@ -535,7 +535,7 @@ void CellList::TransferTo(CellList::Iterator it, CellList& cl,bool UpdateGain)
 	cl.splice(cl.end(),*this,it);
 }
 
-Cell::Square CellList::GetSquare()
+Square CellList::GetSquare()
 {
 	if(flags.SquareComputed) return m_Square;
 	m_Square=0;
@@ -560,13 +560,13 @@ std::string CellList::dbg()
 	return ss.str();
 }
 
-void CellList::SetCellGain(Net::Weight g)
+void CellList::SetCellGain(Weight g)
 {
  	//std::for_each(begin(),end(),std::bind2nd(std::mem_fun_ref(&Cell::SetGain), g));
  	for(auto& cell:*this) cell.SetGain(g);
 }
 
-Net::Weight CellList::IncrementSumGain(Net::Weight g)
+Weight CellList::IncrementSumGain(Weight g)
 {
 	#if 0 && defined(ALGORITHM_VERBOSE)
 	std::cout << "CellList::IncrementSumGain(" << g << ") " << GetSumGain() << " => " << (GetSumGain()+g) << std::endl;
@@ -663,7 +663,7 @@ void Iteration::run()
 				else
 				{
 					struct {
-						Net::Weight left, right;
+						Weight left, right;
 						} gain;
 
 					gain.left=p0.m_Bucket.rbegin()->first;
@@ -709,7 +709,7 @@ void Iteration::run()
 void Iteration::moveCell(Partition* from,Partition* to)
 {
 	CellList& tgCL = from->m_Bucket.rbegin()->second;
-	Net::Weight topGain=from->m_Bucket.rbegin()->first;
+	Weight topGain=from->m_Bucket.rbegin()->first;
 
 	Cell& cell=*tgCL.begin();
 
@@ -758,12 +758,12 @@ Partition::~Partition()
 	//dtor
 }
 
-Cell::Square Partition::GetSquare()
+Square Partition::GetSquare()
 {
 	return m_Bucket.GetSquare()+m_Locker.GetSquare();
 }
 
-Net::Weight Partition::GetGain()
+Weight Partition::GetGain()
 {
 	return m_Bucket.GetGain()+m_Locker.GetSumGain();
 }
@@ -785,7 +785,7 @@ NetlistHypergraph::~NetlistHypergraph()
 
 void NetlistHypergraph::FillBuckets()
 {
-	Net::Weight left=0,right=0;
+	Weight left=0,right=0;
 
 	for(Net& net:nets) {
 		// Set gain for all cells beloging to this partition, with other net cells in other partition
@@ -848,9 +848,9 @@ L	R	dLR	Gl	Gr	dMC
 1	23	-22	23W	-21W	2W
 0	24	-24	25W	-23W	2W
 */
-Net::Weight NetlistHypergraph::UpdateGains(Cell& c)
+Weight NetlistHypergraph::UpdateGains(Cell& c)
 {
-	Net::Weight rv=0;
+	Weight rv=0;
 
 	Partition* newP=c.GetPartition(), *oldP=NULL;
 
@@ -860,7 +860,7 @@ Net::Weight NetlistHypergraph::UpdateGains(Cell& c)
 	else throw std::logic_error("Wrong parition pointer");
 	#endif // CHECK_LOGIC
 
-	std::map<Cell*,Net::Weight> prevGain;
+	std::map<Cell*,Weight> prevGain;
 
 	c.SetGain(0);
 
@@ -881,7 +881,7 @@ Net::Weight NetlistHypergraph::UpdateGains(Cell& c)
 
 			if(cell==c) continue;
 
-			Net::Weight dG=0;
+			Weight dG=0;
 			if(cell.GetPartition()==newP) { newPcnt++; dG=-2*net.GetWeight(); }
 			else {
 					if(cell.GetPartition()==oldP) { oldPcnt++; dG=2*net.GetWeight(); }
@@ -904,10 +904,10 @@ Net::Weight NetlistHypergraph::UpdateGains(Cell& c)
 		}
 
 	// Move cells to new buckets accordingly to the updated gain
-	for(std::pair<Cell*,Net::Weight> k:prevGain){
+	for(std::pair<Cell*,Weight> k:prevGain){
 
 		Cell& cell=*k.first;
-		Net::Weight& prevGain=k.second;
+		Weight& prevGain=k.second;
 
 		#ifdef CHECK_LOGIC
 		if(cell.IsInLocker())
@@ -956,12 +956,12 @@ NetlistHypergraph::CutStat NetlistHypergraph::GetStats(std::ofstream& o,bool fWr
 				if(fWrite) o << net.GetName() << std::endl;
 				msg << net.GetName() << " ";
 				rv.m_NetCut++;
-				rv.m_totWeigth+=net.GetWeight();
+				rv.m_totWeight+=net.GetWeight();
 				break;
 				}
 			}
 	}
-	msg << "=" << rv.m_NetCut << ", total weight is " << rv.m_totWeigth;
+	msg << "=" << rv.m_NetCut << ", total weight is " << rv.m_totWeight;
 	std::cout << msg.str()  << std::endl;
 	if(fWrite) o << msg.str()  << std::endl;
 	return rv;
@@ -1018,9 +1018,9 @@ void Solution::AddCell(Cell* c)
 bool Solution::SolutionImproved(
 	Solution& s, // existing solution
 
-	Cell::Square s2_0, // new solution
-	Cell::Square s2_1,
-	Net::Weight g2) // minimizing gain
+	Square s2_0, // new solution
+	Square s2_1,
+	Weight g2) // minimizing gain
 {
 	// Corner case, empty bin on either side
 	if(s2_0==0 || s2_1==0) return false;
@@ -1224,7 +1224,7 @@ class Test6 : public NetlistHypergraph
             throw std::logic_error(msg.str());
             }
         #endif
-        Cell::Square sq=0;
+        Square sq=0;
         std::stringstream s(ssq);
         s >> sq;
         Cell tmpCell;
@@ -1249,7 +1249,7 @@ class Test6 : public NetlistHypergraph
     {
         net.SetId(idx);
         int cnt=0;
-        Net::Weight w;
+        Weight w;
         std::stringstream s;
         std::string str1;
         for(std::string str:words)
@@ -1259,7 +1259,7 @@ class Test6 : public NetlistHypergraph
                 case 0:
                         net.SetName(str);
 #ifdef  ALGORITHM_VERBOSE
-                        std::cout << "Creating net '" << str << "' weigth="  << std::flush;
+                        std::cout << "Creating net '" << str << "' Weight="  << std::flush;
 #endif
                         break;
                 case 1: s.str(str);

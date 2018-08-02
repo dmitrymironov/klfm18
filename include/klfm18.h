@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <atomic>
+#include <list>
 
 namespace Novorado
 {
@@ -120,11 +121,11 @@ namespace Novorado
 			std::shared_ptr<Net> m_Net;
 		};
 
-		template <class Id, class Pin, class Partition> class Net : 
-			public Id
+		template <class Id,class Pin,class Partition,
+			typename Weight=long> 
+		class Net : public Id
 		{
 			public:
-				using Weight = long;
 				Net();
 				virtual ~Net();
 				Net(const Net&& other);
@@ -141,10 +142,11 @@ namespace Novorado
 				Weight m_Weight;
 		};
 
-		class Cell : public Novorado::Object
+		template <class Id,class Partition,class Pin,
+			typename Square=long,typename Weight=long> 
+		class Cell : public Id
 		{
 			public:
-				typedef long Square;
 				Cell();
 				Cell(Cell& other);
 				Cell(const Cell& other);
@@ -152,19 +154,19 @@ namespace Novorado
 				virtual ~Cell();
 				Square GetSquare() const { return m_Square; }
 				void SetSquare(Square val) { m_Square = val; }
-				Partition* GetPartition();
-				void SetPartition(Partition*);
-				Net::Weight GetGain() const { return m_Gain; }
-				void SetGain(Net::Weight w) { m_Gain=w; }
-				void IncrementGain(Net::Weight w);
-				bool operator==(const Cell& c) const { return c.GetId()==GetId(); }
+				std::shared_ptr<Partition> GetPartition();
+				void SetPartition(std::shared_ptr<Partition>);
+				Weight GetGain() const { return m_Gain; }
+				void SetGain(Weight w) { m_Gain=w; }
+				void IncrementGain(Weight w);
+				bool operator==(const Cell& c) const 
+				{ 
+					return c.Id::GetId()==Id::GetId(); 
+				}
 				void MoveToLocker(bool f=true);
 				bool IsInLocker() const { return flags.inLocker; }
 				bool IsFixed() const { return flags.fixed; }
 				void SetFixed(bool f=true) { flags.fixed=f; }
-
-				void SetNode(const Novorado::Netlist::Node* n) { node=n; }
-				operator const Novorado::Netlist::Node*() { return node; }
 
 				std::list<Pin> m_Pins;
 
@@ -176,13 +178,13 @@ namespace Novorado
 					bool fixed	: 1;
 				} flags;
 
-				Net::Weight m_Gain=0;
+				Weight m_Gain=0;
 				std::shared_ptr<Partition> m_PartitionPtr;
 				Square m_Square=0;
-				std::shared_ptr<const Novorado::Netlist::Node> node;
 		};
 
-		class CellList /* vectorize : public std::list<Cell> */
+		template<class Cell,typename Square=long,typename Weight=long> 
+		class CellList
 		{
 			std::vector<long> cellId2cells;
 			std::vector<Cell*> cells;
@@ -221,11 +223,11 @@ namespace Novorado
 				virtual ~CellList();
 				void TransferTo(Iterator,CellList&,bool UpdateGain=true);
 				void TransferAllFrom(CellList&);
-				Cell::Square GetSquare();
+				Square GetSquare();
 				std::string dbg();
-				void SetCellGain(Net::Weight gain);
-				Net::Weight GetSumGain();
-				Net::Weight IncrementSumGain(Net::Weight g);
+				void SetCellGain(Weight gain);
+				Weight GetSumGain();
+				Weight IncrementSumGain(Weight g);
 				void InvalidateGain() { flags.GainComputed=false; m_SumGain=0; }
 				void init(const std::vector<Cell*>&);
 				operator std::vector<const Novorado::Netlist::Node*>();
@@ -237,33 +239,39 @@ namespace Novorado
 					bool GainComputed: 1;
 					bool SquareComputed: 1;
 					} flags;
-				Net::Weight m_SumGain;
-				Cell::Square m_Square;
+				Weight m_SumGain;
+				Square m_Square;
 		};
 
-		class Bucket : public std::map<Net::Weight,CellList>
+		template<class Cell,class Partition,
+			typename Square=long,typename Weight=long>
+		class Bucket : public std::map<Weight,CellList>
 		{
 			public:
 				virtual ~Bucket();
 				Bucket(const Bucket& other);
 				Bucket& operator=(const Bucket& other);
-				void SetPartition(Partition* p) { m_Partition=p; }
+				void SetPartition(std::shared_ptr<Partition> p) 
+				{ 
+					m_Partition=p; 
+				}
 				void FillByGain(CellList&);
 				void dbg(long);
-				Cell::Square GetSquare() const { return m_Square; }
-				void SubtractSquare(Cell::Square s) { m_Square-=s; }
-				Net::Weight GetGain() const { return m_SumGain;}
-				void IncrementGain(Net::Weight g);
+				Square GetSquare() const { return m_Square; }
+				void SubtractSquare(Square s) { m_Square-=s; }
+				Weight GetGain() const { return m_SumGain;}
+				void IncrementGain(Weight g);
 			protected:
 			private:
-				Cell::Square m_Square;
-				Net::Weight m_SumGain;
+				Square m_Square;
+				Weight m_SumGain;
 				std::shared_ptr<Partition> m_Partition;
 				Bucket();
 				friend class Partition;
 		};
 
-		class Partition : public Novorado::Object
+		template <class Id> 
+		class Partition : public Id
 		{
 			public:
 				Partition();
@@ -272,8 +280,8 @@ namespace Novorado
 				CellList m_Locker;
 				Bucket m_Bucket;
 
-				Cell::Square GetSquare();
-				Net::Weight GetGain();
+				Square GetSquare();
+				Weight GetGain();
 
 				void preset(const std::vector<Cell*>& fix,const std::vector<Cell*>& ini);
 
@@ -298,9 +306,9 @@ namespace Novorado
 			public:
 				struct CellRecord {
 					CellRecord():cell(NULL),gain(0),p(NULL){}
-					Cell* cell;
-					Net::Weight gain;
-					Partition* p;
+					std::shared_ptr<Cell> cell;
+					Weight gain;
+					std::shared_ptr<Partition> p;
 					};
 				Solution(Partition&,Partition&,std::vector<Cell>&);
 				Solution(Partition&,Partition&);
@@ -313,24 +321,24 @@ namespace Novorado
 				float Ratio() const { return float(std::max(s1,s2)) / float(std::min(s1,s2)); }
 
 				// Quality of the solution
-				Net::Weight Cut() const { return g1+g2; }
+				Weight Cut() const { return g1+g2; }
 
-				void AddCell(Cell*);
+				void AddCell(std::shared_ptr<Cell>);
 
 				static bool SolutionImproved(
 					Solution&,
 
-					Cell::Square s2_0,
-					Cell::Square s2_1,
-					Net::Weight g2);
+					Square s2_0,
+					Square s2_1,
+					Weight g2);
 
 				// Interchanges cells in lockers and initializes gain
 				void WriteLockers(CellList& l0, CellList& l1);
 
 			protected:
-				Partition *p1, *p2;
-				Net::Weight g1,g2;
-				Cell::Square s1,s2;
+				std::shared_ptr<Partition> p1, p2;
+				Weight g1,g2;
+				Square s1,s2;
 				std::vector<CellRecord> m_Recs;
 		};
 
@@ -349,12 +357,12 @@ namespace Novorado
 				Solution bestSolution;
 
 				void FillBuckets();
-				Net::Weight UpdateGains(Cell&);
+				Weight UpdateGains(Cell&);
 
 				struct CutStat {
 					long m_NetCut;
-					Net::Weight m_totWeigth;
-					CutStat() { m_NetCut=0; m_totWeigth=0; }
+					Weight m_totWeight;
+					CutStat() { m_NetCut=0; m_totWeight=0; }
 					};
 
 				CutStat GetStats(std::ofstream&,bool fWrite=true);
@@ -367,7 +375,7 @@ namespace Novorado
 			public:
 				Iteration(NetlistHypergraph*);
 				virtual ~Iteration();
-				Net::Weight GetImprovement() const { return m_Improvement; }
+				Weight GetImprovement() const { return m_Improvement; }
 				void moveCell(Partition*,Partition*);
 
 				void moveLeft() { moveCell(&p1,&p0); }
@@ -378,7 +386,7 @@ namespace Novorado
 		   protected:
 
 			private:
-				Net::Weight m_Improvement;
+				Weight m_Improvement;
 				std::shared_ptr<NetlistHypergraph> graph;
 		};
 
