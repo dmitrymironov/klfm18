@@ -1,5 +1,7 @@
 #include "partition.h"
 
+using namespace Novorado::Partition;
+
 void Partition::preset(const std::vector<Cell*>& fix,const std::vector<Cell*>& ini)
 {
 	for(auto* pcell:fix) pcell->SetFixed(true), pcell->SetSquare(0), pcell->SetPartition(this);

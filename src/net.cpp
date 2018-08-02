@@ -1,5 +1,7 @@
 #include "net.h"
 
+using namespace Novorado::Partition;
+
 Net::Net()
 {
 	//ctor

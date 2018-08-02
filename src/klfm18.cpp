@@ -1,3 +1,6 @@
+
+#ifdef _REFACTORING_
+
 //#define ALGORITHM_VERBOSE
 
 // Uncomment following line so exectuble becomes unit test for partitioning algorithm
@@ -579,3 +582,5 @@ public:
 
 Test6 t_6("/home/dmi/soft/shelby/test/6.net");
 #endif
+
+#endif//_REFACTORING_

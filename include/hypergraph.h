@@ -2,6 +2,7 @@
 #define _HYPERGRAPH_H
 
 #include "solution.h"
+#include "bracket.h"
 
 namespace Novorado
 {

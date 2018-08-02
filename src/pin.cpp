@@ -1,5 +1,7 @@
 #include "pin.h"
 
+using namespace Novorado::Partition;
+
 Pin::Pin()
 {
 	SetId(-1);

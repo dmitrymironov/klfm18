@@ -61,6 +61,7 @@ namespace Novorado
 		//
 		//////////////////////////////////////////////////////////////////////////////////////////
 
+		#ifdef _REFACTORING_
 		class KLFM : public NetlistHypergraph
 		{
 			std::vector<Cell*> C(const npvec&);
@@ -74,6 +75,7 @@ namespace Novorado
 						part& initial // Initial distribution & resulting partition
 						);
 		};
+		#endif//_REFACTORING_
 	};
 };
 #endif//_KLFM18_H

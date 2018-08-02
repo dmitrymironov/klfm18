@@ -66,12 +66,17 @@ namespace Novorado
 
 				Id(const Id&) = default;
 
-				constexpr Index GetId() const noexcept
+				constexpr auto GetId() const noexcept
 				{
 					return m_index;
 				}
 
-				string GetName() const noexcept
+				constexpr unsigned int GetUnsignedId() const noexcept
+				{
+					return static_cast<unsigned int>(m_index);
+				}
+
+				auto GetName() const noexcept
 				{
 					return m_name;
 				}

@@ -10,7 +10,7 @@ namespace Novorado
 	{
 		class Partition;
 		class Pin;
-		
+
 		using Weight = long;
 
 		class Net : public Bridge::Id
@@ -18,12 +18,21 @@ namespace Novorado
 			public:
 				Net();
 				virtual ~Net();
-				Net(const Net&& other);
-				Net& operator=(const Net&& other);
-				void SetWeight(Weight w) { m_Weight = w; }
-				Weight GetWeight() const { return m_Weight; }
+				Net(const Net& other);
+				Net& operator=(const Net& other);
+				void SetWeight(Weight w)
+				{
+					m_Weight = w;
+				}
+				Weight GetWeight() const
+				{
+					return m_Weight;
+				}
 				void AddPin(std::shared_ptr<Pin>);
-				auto Dim() const { return m_Pins.size(); }
+				auto Dim() const
+				{
+					return m_Pins.size();
+				}
 				auto Dim(std::shared_ptr<Partition>);
 				std::vector<Pin*> m_Pins;
 

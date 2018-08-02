@@ -1,5 +1,6 @@
 #include "celllist.h"
 #include <algorithm>
+#include <sstream>
 
 using namespace Novorado::Partition;
 
@@ -51,9 +52,10 @@ Weight CellList::GetSumGain()
 
 CellList::Iterator CellList::find(Cell& cell)
 {
-	if(cell.GetId()<cellId2cells.size() && cellId2cells[cell.GetId()]!=-1)
+	if(cell.GetUnsignedId()<cellId2cells.size() &&
+		cellId2cells[cell.GetUnsignedId()]!=-1)
 	{
-		return Iterator(this,cellId2cells[cell.GetId()]);
+		return Iterator(this,cellId2cells[cell.GetUnsignedId()]);
 	}
 
 	return end();
@@ -62,14 +64,14 @@ CellList::Iterator CellList::find(Cell& cell)
 void CellList::removeCell(Cell& cell)
 {
 
-	long idx=cellId2cells[cell.GetId()];
+	long idx=cellId2cells[cell.GetUnsignedId()];
 	#ifdef CHECK_LOGIC
 	if(cells[idx]!=&cell)
 	{
 		throw std::logic_error("data corruption");
 	}
 	#endif
-	cellId2cells[cell.GetId()]=-1;
+	cellId2cells[cell.GetUnsignedId()]=-1;
 	cells[idx]=NULL;
 
 	dirty=true;
@@ -129,8 +131,8 @@ void CellList::pack()
 			)
     	);
 
-	Bridge::Id i{0};
-	for(Cell* pt:cells) cellId2cells[pt->GetId()]=i++;
+	Index i{0};
+	for(Cell* pt:cells) cellId2cells[pt->GetUnsignedId()]=i++;
 
 	dirty=false;
 

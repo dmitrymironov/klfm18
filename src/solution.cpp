@@ -1,5 +1,7 @@
 #include "solution.h"
 
+using namespace Novorado::Partition;
+
 Solution::Solution(Partition& _p1,Partition& _p2):p1(&_p1),p2(&_p2)
 {
 	//ctor
