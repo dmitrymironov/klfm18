@@ -3,7 +3,7 @@ WARNINGS= \
 -Wcast-qual -Wcast-align -Wno-sign-compare -Wno-unknown-pragmas -Wno-conversion \
  -Werror
 
-RELEASE=${OPENCAD}
+RELEASE=.
 BIN=$(RELEASE)/bin
 OBJ=.obj
 LIB=$(RELEASE)/lib
