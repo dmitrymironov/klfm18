@@ -1,0 +1,21 @@
+c0 1
+c1 1
+c2 1
+c3 1
+c4 1
+c5 1
+c6 1
+c7 1
+c8 1
+nA 1 c0 a c1 a
+nB 1 c0 b c2 a
+nC 1 c0 c c5 a
+nD 1 c1 b c6 a
+nE 1 c2 b c3 a
+nF 1 c3 b c5 b
+nG 1 c3 c c4 a
+nH 1 c4 b c5 c
+nK 1 c7 a c6 b
+nL 1 c8 a c7 b
+fixedleft c8
+fixedright c4
