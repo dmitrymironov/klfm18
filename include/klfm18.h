@@ -1,10 +1,8 @@
 #ifndef _PARTITION_H
 #define _PARTITION_H
 
-#include <string>
+#include "cutline.h"
 #include <vector>
-#include <memory>
-#include <atomic>
 #include <list>
 
 namespace Novorado
@@ -15,63 +13,19 @@ namespace Novorado
 		constexpr auto MIN_BIN_SIZE = 2;
 		// Square treshhold 0.1=10%
 		constexpr auto SQUARE_TOLERANCE = 0.1;
-
-		/*! Cutline class to facilitate hierarchial cuts */
-		template <class Rect, typename Coordinate = long> struct CutLine
-		{
-			/** Cut enum type 
-			 * Control bisection direction
-			 */
-			enum struct Direction 
-			{ 
-				Horizontal, /**< horizontal cuts */
-				Vertical /**< vertical cuts */
-			};
-			
-			std::atomic<Direction> dir{Direction::Vertical}; /*!< cut
-															direction */
-			std::atomic<Coordinate> l{-1}; /*!< Cut line coordinate */
-
-			//! Default cutline ctor: vertical with invalid coordinate
-			/*!
-			 \dir cutline direction (default is vertical)
-			 \l corodinate of the cut line (default is invalid, negative
-			 */
-			constexpr CutLine(Direction dir=Direction::Vertical, 
-					Coordinate l=-1) noexcept: dir{dir},l{l}{}
-
-			//! cutline ctor: cut rectangle in half(vertical by default)
-			/*!
-			 \r rectangle to cut
-			 \dir cut direction
-			 */
-			constexpr CutLine(const Rect&& r,
-				Direction dir=Direction::Vertical) noexcept:
-					dir{dir},
-					l(dir==Direction::Vertical?
-						r.hCenter():r.vCenter()){}
-
-			//! Flip cut direction for any rectangle
-			constexpr void switchDir() noexcept 
-			{ 
-				if(dir==Direction::Vertical) dir=Direction::Horizontal; 
-					else dir=Direction::Horizontal; 
-			}
-
-			//! Split 
-			inline constexpr void split(const Rect&& s,
-				Rect&& r1,Rect&& r2) noexcept 
-			{
-				r1=r2=s;
-				if(dir==Direction::Vertical) l=r1.right()=r2.left()=l;
-					else l=r1.top()=r2.bottom()=l;
-			}
-		};
 		
+		using Square = long;
+		using Weight = long;
+		
+		class Pin;
+		class Net;
+		class Cell;
+		class Partition;
+				
 		/*! Partition bin */
-		template <class Cell, class Rect> struct part
+		struct part
 		{
-			CutLine<Rect> cut;
+			CutLine cut;
 			std::vector<Cell*,Rect> bin1, bin2;
 			
 			constexpr void reserve(size_t sz) noexcept
@@ -86,7 +40,7 @@ namespace Novorado
 			}
 		};
 
-		template <class Id, class Net, class Cell> class Pin : public Id
+		class Pin : public Id
 		{
 		public:
 		
@@ -121,8 +75,6 @@ namespace Novorado
 			std::shared_ptr<Net> m_Net;
 		};
 
-		template <class Id,class Pin,class Partition,
-			typename Weight=long> 
 		class Net : public Id
 		{
 			public:
