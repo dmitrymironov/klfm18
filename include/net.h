@@ -9,6 +9,7 @@ namespace Novorado
 	namespace Partition
 	{
 		class Partition;
+		class Pin;
 		
 		using Weight = long;
 

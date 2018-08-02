@@ -2,6 +2,7 @@
 #define _CELL_H
 
 #include "bridge.h"
+#include "net.h"
 #include <list>
 
 namespace Novorado

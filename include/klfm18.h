@@ -1,12 +1,10 @@
 #ifndef _PARTITION_H
 #define _PARTITION_H
 
+#include "celllist.h"
+#include "bucket.h"
+#include "bin.h"
 #include "cutline.h"
-#include "pin.h"
-#include "net.h"
-#include "cell.h"
-#include <vector>
-#include <list>
 
 namespace Novorado
 {
@@ -16,108 +14,6 @@ namespace Novorado
 		constexpr auto MIN_BIN_SIZE = 2;
 		// Square treshhold 0.1=10%
 		constexpr auto SQUARE_TOLERANCE = 0.1;
-				
-		/*! Partition bin */
-		struct part
-		{
-			CutLine cut;
-			std::vector<Cell*,Bridge::Id> bin1, bin2;
-			
-			constexpr void reserve(size_t sz) noexcept
-			{ 
-				bin1.reserve(sz), bin2.reserve(sz); 
-			}
-			
-			constexpr void setRect(const Rect& r1,
-				const Rect& r2) noexcept
-			{ 
-				bin1.box=r1;bin2.box=r2; 
-			}
-		};
-
-		class CellList
-		{
-			std::vector<long> cellId2cells;
-			std::vector<Cell*> cells;
-			bool dirty=false; // dirty when there are NULLs in cells() array
-			void pack();
-			public:
-				class Iterator
-				{
-					std::shared_ptr<CellList> L;
-					long idx=-1;
-					friend CellList;
-					public:
-						Iterator(CellList* l,long _idx):L(l),idx(_idx){}
-						bool operator!=(const Iterator& i) const { if(L.getConst()->dirty) throw std::logic_error("integrity"); return idx!=i.idx; }
-						bool operator==(const Iterator& i) const { if(L.getConst()->dirty) throw std::logic_error("integrity"); return idx==i.idx; }
-						Iterator operator++() { if(L->dirty)L->pack(); idx++; return *this; }
-						Iterator operator++(int /* mark postfix*/) { if(L->dirty)L->pack(); Iterator rv(*this); idx++; return rv; }
-						Iterator operator--(int) { if(L->dirty)L->pack(); Iterator rv(*this); idx--; return rv; }
-						Cell* operator->() { if(L->dirty)L->pack(); return L->cells[idx]; }
-						Cell& operator*() { if(L->dirty)L->pack(); return *L->cells[idx]; }
-				};
-				friend Iterator;
-				Iterator begin() { return Iterator(this,0); }
-				Iterator end() { return Iterator(this,cells.size());}
-				bool empty() { if(dirty) pack(); return cells.empty(); }
-				bool size() { if(dirty) pack(); return cells.size(); }
-				// Move cell in position <posInFrom> to list <from> in <posTo>
-				void splice(Iterator posTo,CellList& from,Iterator posInFrom);
-				// Move all cells <from> to <posTo>
-				void splice(Iterator posTo,CellList& from);
-				void insertCell(Iterator,Cell&);
-				void removeCell(Cell&);
-				Iterator find(Cell&);
-
-				CellList();
-				virtual ~CellList();
-				void TransferTo(Iterator,CellList&,bool UpdateGain=true);
-				void TransferAllFrom(CellList&);
-				Square GetSquare();
-				std::string dbg();
-				void SetCellGain(Weight gain);
-				Weight GetSumGain();
-				Weight IncrementSumGain(Weight g);
-				void InvalidateGain() { flags.GainComputed=false; m_SumGain=0; }
-				void init(const std::vector<Cell*>&);
-				operator std::vector<const Novorado::Netlist::Node*>();
-				// Will clear target vector
-				void copyWithoutFixed(npvec& v);
-			protected:
-			private:
-				struct {
-					bool GainComputed: 1;
-					bool SquareComputed: 1;
-					} flags;
-				Weight m_SumGain;
-				Square m_Square;
-		};
-
-		class Bucket : public std::map<Weight,CellList>
-		{
-			public:
-				virtual ~Bucket();
-				Bucket(const Bucket& other);
-				Bucket& operator=(const Bucket& other);
-				void SetPartition(std::shared_ptr<Partition> p) 
-				{ 
-					m_Partition=p; 
-				}
-				void FillByGain(CellList&);
-				void dbg(long);
-				Square GetSquare() const { return m_Square; }
-				void SubtractSquare(Square s) { m_Square-=s; }
-				Weight GetGain() const { return m_SumGain;}
-				void IncrementGain(Weight g);
-			protected:
-			private:
-				Square m_Square;
-				Weight m_SumGain;
-				std::shared_ptr<Partition> m_Partition;
-				Bucket();
-				friend class Partition;
-		};
 
 		class Partition : public IdBridge
 		{
