@@ -53,12 +53,11 @@ namespace Novorado
 			}
 
 			//! Split 
-			inline void split(CRectPt s,
-				RectPt r1,RectPt r2) noexcept 
+			inline void split(Rect&& s,Rect&& r1,Rect&& r2) noexcept 
 			{
-				*r1=*r2=*s;
-				if(dir==Direction::Vertical) l=r1->right()=r2->left()=l;
-					else l=r1->top()=r2->bottom()=l;
+				r1=r2=s;
+				if(dir==Direction::Vertical) l=r1.right()=r2.left()=l;
+					else l=r1.top()=r2.bottom()=l;
 			}
 		};
 	}

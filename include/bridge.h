@@ -16,23 +16,77 @@ namespace Novorado
 		{
 			struct Rect
 			{
-				virtual Coordinate vCenter() const noexcept = 0;
-				virtual Coordinate hCenter() const noexcept = 0;
-				virtual Coordinate& left() noexcept = 0;
-				virtual Coordinate& bottom() noexcept = 0;
-				virtual Coordinate& right() noexcept = 0;
-				virtual Coordinate& top() noexcept = 0;
+				Rect() = default;
+				Rect(const Rect&) = default;
+				
+				constexpr Coordinate vCenter() const noexcept
+				{
+					return (m_top+m_bottom)/2;
+				}
+				
+				constexpr Coordinate hCenter() const noexcept
+				{
+					return (m_left+m_right)/2;
+				}
+				
+				constexpr Coordinate& left() noexcept
+				{
+					return m_left;
+				}
+				
+				constexpr Coordinate& bottom() noexcept
+				{
+					return m_bottom;
+				}
+				
+				constexpr Coordinate& right() noexcept
+				{
+					return m_right;
+				}
+					
+				constexpr Coordinate& top() noexcept
+				{
+					return m_top;
+				}
+				
+				private:
+				
+					Coordinate 
+						m_left{0},m_right{-1},m_top{0},m_bottom{-1};
 			};
 			
 			struct Id
 			{
-				virtual Index GetId() const noexcept = 0;
-				virtual string GetName() const noexcept = 0;
+				
+				Id() = default;
+				Id(const Id&) = default;
+				
+				constexpr Index GetId() const noexcept 
+				{ 
+					return m_idx; 
+				}
+				
+				string GetName() const noexcept 
+				{ 
+					return m_name; 
+				}
+				
+				constexpr void SetId(Index index) noexcept
+				{
+					m_index = index;
+				}
+				
+				void SetName(string name) noexcept
+				{
+					m_name = name;
+				}
+				private:
+					// Quick implementation, need to store those 
+					// in optimized containers
+					Index m_idx;
+					string m_name;
 			};
-		}
-		
-		using RectPt = std::shared_ptr<Bridge::Rect>;
-		using CRectPt = std::shared_ptr<const Bridge::Rect>;
+		}	
 	}
 }
 #endif//_BRIDGE_H

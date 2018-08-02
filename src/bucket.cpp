@@ -1,5 +1,7 @@
 #include "bucket.h"
 
+using namespace Novorado::Partition;
+
 Bucket::Bucket()
 {
 	//ctor

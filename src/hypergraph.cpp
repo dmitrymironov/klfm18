@@ -1,5 +1,7 @@
 #include "hypergraph.h"
 
+using namespace Novorado::Partition;
+
 NetlistHypergraph::NetlistHypergraph():bestSolution(p0,p1)
 {
 	//ctop

@@ -1,5 +1,7 @@
 #include "celllist.h"
 
+using namespace Novorado::Partition;
+
 void CellList::copyWithoutFixed(npvec& v)
 {
 	v.clear();

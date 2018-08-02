@@ -1,5 +1,7 @@
 #include "cell.h"
 
+using namespace Novorado::Partition;
+
 Cell::Cell()
 {
 	//ctor
