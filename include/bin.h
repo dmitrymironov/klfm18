@@ -8,22 +8,31 @@ namespace Novorado
 {
 	namespace Partition
 	{
-				
+		// Temporary proxy class that will be refactored out
+		struct npvec : public std::vector<void*>
+		{
+			RectPt box;
+			npvec& operator=(const std::vector<void*>& v)
+			{
+				std::vector<void*>::operator=(v);
+				return *this;
+			}
+		};
+		
 		/*! Partition bin */
 		struct part
 		{
 			CutLine cut;
-			std::vector<Cell*,Bridge::Id> bin1, bin2;
+			npvec bin1, bin2;
 			
-			constexpr void reserve(size_t sz) noexcept
+			void reserve(size_t sz) noexcept
 			{ 
 				bin1.reserve(sz), bin2.reserve(sz); 
 			}
 			
-			constexpr void setRect(const Rect& r1,
-				const Rect& r2) noexcept
+			void setRect(CRectPt r1,CRectPt r2) noexcept
 			{ 
-				bin1.box=r1;bin2.box=r2; 
+				*bin1.box=*r1;*bin2.box=*r2; 
 			}
 		};
 
