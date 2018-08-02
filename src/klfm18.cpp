@@ -9,10 +9,9 @@
 #define ALGORITHM_VERBOSE 1
 #endif // KLFM_TEST
 
-#include "partition.h"
+#include "klfm18.h"
 #include <sstream>
 #include <fstream>
-#include "abstract_iterators.h"
 
 using namespace Novorado::Partition;
 
@@ -86,7 +85,7 @@ void KLFM::CreateGraph(const Novorado::Netlist::NetList* netlist,const part& fix
 		for(long t=0;t<aNet->GetNumTerminals();t++)
 		{
 			const Novorado::Netlist::Terminal* T=aNet->terminal(t);
-			Novorado::Ptr<Cell> klfm_cell;
+			std::shared_ptr<Cell> klfm_cell;
 			if(T->isExternalPin()) klfm_cell=&pins[T->externalPin()->GetId()];
 				else klfm_cell=&instances[T->instance()->GetId()];
 			klfm_cell->m_Pins.emplace_back();

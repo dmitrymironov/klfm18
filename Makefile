@@ -44,7 +44,7 @@ TARGET=$(LIB)/libklfm18.$(DYN_EXT)
 
 INCLUDES+=-Iinclude/ -I$(LIBERTY_INCLUDE) -I.
 
-CXXFLAGS+=$(INCLUDES) $(DEFINES) -std=c++17 $(WARNINGS)
+CXXFLAGS+=$(INCLUDES) $(DEFINES) -std=c++17 $(WARNINGS) -fmax-errors=5
 
 debug: $(DIRS) $(TARGET)
 release : $(DIRS) $(DOC) $(TARGET)

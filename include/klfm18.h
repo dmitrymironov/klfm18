@@ -1,74 +1,113 @@
 #ifndef _PARTITION_H
 #define _PARTITION_H
 
-#include	"abstract_netlist.h"
-#include 	"vector2d.h"
-
-// Partitioner will not proceed for small bins
-#define MIN_BIN_SIZE 2
-// Square treshhold 0.1=10%
-#define SQUARE_TOLERANCE 0.1
+#include <string>
+#include <vector>
+#include <memory>
+#include <atomic>
 
 namespace Novorado
 {
 	namespace Partition
 	{
-		class Partition;
-		class Cell;
-		class Net;
+		// Partitioner will not proceed for small bins
+		constexpr auto MIN_BIN_SIZE = 2;
+		// Square treshhold 0.1=10%
+		constexpr auto SQUARE_TOLERANCE = 0.1;
 
-		struct npvec : public std::vector<const Novorado::Netlist::Node*>
+		/*! Cutline class to facilitate hierarchial cuts */
+		template <class Rect, typename Coordinate = long> struct CutLine
 		{
-			Novorado::Rect box;
-			npvec& operator=(const std::vector<const Novorado::Netlist::Node*>& v)
-			{
-				std::vector<const Novorado::Netlist::Node*>::operator=(v);
-				return *this;
+			/** Cut enum type 
+			 * Control bisection direction
+			 */
+			enum struct Direction 
+			{ 
+				Horizontal, /**< horizontal cuts */
+				Vertical /**< vertical cuts */
+			};
+			
+			std::atomic<Direction> dir{Direction::Vertical}; /*!< cut
+															direction */
+			std::atomic<Coordinate> l{-1}; /*!< Cut line coordinate */
+
+			//! Default cutline ctor: vertical with invalid coordinate
+			/*!
+			 \dir cutline direction (default is vertical)
+			 \l corodinate of the cut line (default is invalid, negative
+			 */
+			constexpr CutLine(Direction dir=Direction::Vertical, 
+					Coordinate l=-1) noexcept: dir{dir},l{l}{}
+
+			//! cutline ctor: cut rectangle in half(vertical by default)
+			/*!
+			 \r rectangle to cut
+			 \dir cut direction
+			 */
+			constexpr CutLine(const Rect&& r,
+				Direction dir=Direction::Vertical) noexcept:
+					dir{dir},
+					l(dir==Direction::Vertical?
+						r.hCenter():r.vCenter()){}
+
+			//! Flip cut direction for any rectangle
+			constexpr void switchDir() noexcept 
+			{ 
+				if(dir==Direction::Vertical) dir=Direction::Horizontal; 
+					else dir=Direction::Horizontal; 
 			}
-		};
 
-		struct CutLine
-		{
-			enum DIR { HOR, VER } dir = VER;
-			Novorado::Coord l=-1;
-
-			CutLine(DIR d=VER, Novorado::Coord loc=-1):dir(d),l(loc){}
-
-			CutLine(const Novorado::Rect& r,DIR d=VER):dir(d),l(dir==VER?r.hCenter():r.vCenter()){}
-
-			void switchDir() { if(dir==VER) dir=HOR; else dir=VER; }
-
-			void split(const Novorado::Rect& s,Novorado::Rect& r1,Novorado::Rect& r2)
+			//! Split 
+			inline constexpr void split(const Rect&& s,
+				Rect&& r1,Rect&& r2) noexcept 
 			{
 				r1=r2=s;
-				if(dir==VER) l=r1.right()=r2.left()=l;
-				else l=r1.top()=r2.bottom()=l;
+				if(dir==Direction::Vertical) l=r1.right()=r2.left()=l;
+					else l=r1.top()=r2.bottom()=l;
+			}
+		};
+		
+		/*! Partition bin */
+		template <class Cell, class Rect> struct part
+		{
+			CutLine<Rect> cut;
+			std::vector<Cell*,Rect> bin1, bin2;
+			
+			constexpr void reserve(size_t sz) noexcept
+			{ 
+				bin1.reserve(sz), bin2.reserve(sz); 
+			}
+			
+			constexpr void setRect(const Rect& r1,
+				const Rect& r2) noexcept
+			{ 
+				bin1.box=r1;bin2.box=r2; 
 			}
 		};
 
-		struct part
-		{
-			CutLine cut;
-			npvec bin1, bin2;
-			void reserve(size_t sz)  { bin1.reserve(sz), bin2.reserve(sz); }
-			void setRect(const Novorado::Rect& r1,const Novorado::Rect& r2) { bin1.box=r1;bin2.box=r2; }
-		};
-
-		class Pin : public Novorado::Object
+		template <class Id, class Net, class Cell> class Pin : public Id
 		{
 		public:
-			Pin();
-			virtual ~Pin();
+		
+			constexpr Pin() noexcept = default;
+			virtual ~Pin() noexcept = default;
 
-			// ATTENTION! Does not copy cell or net pointers
-			Pin(const Pin& other);
-			Pin& operator=(const Pin& other);
+			constexpr Pin(const Pin&& other) noexcept;
+			constexpr Pin& operator=(const Pin&& other) noexcept;
 
-			Cell* GetCell(){return m_Cell;}
-			void SetCell(Cell* val){m_Cell = val;}
+			constexpr auto GetCell() noexcept 
+			{
+				return m_Cell;
+			}
+			
+			constexpr void SetCell(std::shared_ptr<Cell> val) noexcept 
+			{
+				m_Cell = val;
+			}
 
-			Net* GetNet(){return m_Net;}
-			void SetNet(Net* val);
+			constexpr auto GetNet() noexcept {return m_Net;}
+			
+			constexpr void SetNet(std::shared_ptr<Net> val) noexcept;
 
 			#ifdef CHECK_LOGIC
 			// Overloading object method for consistency checking
@@ -77,31 +116,28 @@ namespace Novorado
 
 		protected:
 		private:
-			Novorado::Ptr<Cell> m_Cell;
-			Novorado::Ptr<Net> m_Net;
+			std::shared_ptr<Cell> m_Cell;
+			std::shared_ptr<Net> m_Net;
 		};
 
-		class Net : public Novorado::Object
+		template <class Id, class Pin, class Partition> class Net : 
+			public Id
 		{
 			public:
-				typedef long Weight;
+				using Weight = long;
 				Net();
 				virtual ~Net();
-				Net(const Net& other);
-				Net& operator=(const Net& other);
+				Net(const Net&& other);
+				Net& operator=(const Net&& other);
 				void SetWeight(Weight w) { m_Weight = w; }
 				Weight GetWeight() const { return m_Weight; }
-				void AddPin(Pin*);
-				unsigned int Dim() const { return m_Pins.size(); }
-				unsigned int Dim(Partition*);
+				void AddPin(std::shared_ptr<Pin>);
+				auto Dim() const { return m_Pins.size(); }
+				auto Dim(std::shared_ptr<Partition>);
 				std::vector<Pin*> m_Pins;
-
-				void SetAbstractNet(const Novorado::Netlist::Net* p) { aNet=p; }
-				operator const Novorado::Netlist::Net*() { return aNet; }
 
 			protected:
 			private:
-				Novorado::Ptr<const Novorado::Netlist::Net> aNet;
 				Weight m_Weight;
 		};
 
@@ -141,9 +177,9 @@ namespace Novorado
 				} flags;
 
 				Net::Weight m_Gain=0;
-				Novorado::Ptr<Partition> m_PartitionPtr;
+				std::shared_ptr<Partition> m_PartitionPtr;
 				Square m_Square=0;
-				Novorado::Ptr<const Novorado::Netlist::Node> node;
+				std::shared_ptr<const Novorado::Netlist::Node> node;
 		};
 
 		class CellList /* vectorize : public std::list<Cell> */
@@ -155,7 +191,7 @@ namespace Novorado
 			public:
 				class Iterator
 				{
-					Novorado::Ptr<CellList> L;
+					std::shared_ptr<CellList> L;
 					long idx=-1;
 					friend CellList;
 					public:
@@ -222,7 +258,7 @@ namespace Novorado
 			private:
 				Cell::Square m_Square;
 				Net::Weight m_SumGain;
-				Novorado::Ptr<Partition> m_Partition;
+				std::shared_ptr<Partition> m_Partition;
 				Bucket();
 				friend class Partition;
 		};
@@ -302,7 +338,7 @@ namespace Novorado
 		{
 			protected:
 				friend class Iteration;
-				Novorado::Ptr<std::vector<Cell>> m_AllCells;
+				std::shared_ptr<std::vector<Cell>> m_AllCells;
 				Novorado::Bracket<Cell> pins, instances;
 
 			public:
@@ -343,7 +379,7 @@ namespace Novorado
 
 			private:
 				Net::Weight m_Improvement;
-				Novorado::Ptr<NetlistHypergraph> graph;
+				std::shared_ptr<NetlistHypergraph> graph;
 		};
 
 		class RandomDistribution : public CellMove
