@@ -41,13 +41,14 @@ else
 endif
 
 TARGET=$(LIB)/libklfm18.$(DYN_EXT)
+TEST_APP=$(BIN)/klfm_test
 
 INCLUDES+=-Iinclude/ -I$(LIBERTY_INCLUDE) -I.
 
 CXXFLAGS+=$(INCLUDES) $(DEFINES) -std=c++17 $(WARNINGS) -fmax-errors=5
 
-debug: $(DIRS) $(TARGET)
-release : $(DIRS) $(DOC) $(TARGET)
+debug: $(DIRS) $(TARGET) $(TEST_APP)
+release : $(DIRS) $(DOC) $(TARGET)  $(TEST_APP)
 
 release: CXXFLAGS += -Ofast
 debug: CXXFLAGS += -DDEBUG -g -O0 -D_GLIBCXX_DEBUG -D_GLIBXX_DEBUG_PEDANTIC
@@ -87,6 +88,11 @@ $(TARGET) : $(OBJS)
 	@$(STRIP_CMD)
 	$(DONE)
 
+$(TEST_APP): $(OBJ)/test.o
+	@$(ECHO) Linking $@
+	@$(GCC) -o $@ $(OBJS) -lstdc++
+	@$(STRIP_CMD)
+	$(DONE)
 
 MKDIR=if [ ! -d $@ ]; then echo "Creatng folder $@"; $(MD) -p $@; fi
 
