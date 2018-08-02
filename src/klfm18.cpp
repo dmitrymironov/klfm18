@@ -54,7 +54,7 @@ void KLFM::CreateGraph(const Novorado::Netlist::NetList* netlist,const part& fix
 	nets.resize(netlist->GetNumNets());
 
 	// Set id's and pointers
-	Novorado::ID idx=0;
+	Bridge::Id idx=0;
 	idx=0;for(auto& cell: *m_AllCells) cell.SetId(idx++);
 	idx=0;for(auto& net: nets) net.SetId(idx++);
 	idx=0;for(auto& cell:instances) cell.SetNode(netlist->instance(idx++));

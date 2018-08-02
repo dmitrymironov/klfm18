@@ -1,7 +1,9 @@
 #include "celllist.h"
+#include <algorithm>
 
 using namespace Novorado::Partition;
 
+/* classes building needs to be refactored
 void CellList::copyWithoutFixed(npvec& v)
 {
 	v.clear();
@@ -16,6 +18,7 @@ CellList::operator std::vector<const Novorado::Netlist::Node*>()
 	long idx=0;for(auto* cell:cells) rv[idx++]=*cell;
 	return rv;
 }
+*/
 
 void CellList::init(const std::vector<Cell*>& v)
 {
@@ -126,7 +129,7 @@ void CellList::pack()
 			)
     	);
 
-	Novorado::ID i=0;
+	Bridge::Id i{0};
 	for(Cell* pt:cells) cellId2cells[pt->GetId()]=i++;
 
 	dirty=false;

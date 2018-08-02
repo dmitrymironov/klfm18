@@ -13,15 +13,15 @@ namespace Novorado
 		/*! Cutline class to facilitate hierarchial cuts */
 		struct CutLine
 		{
-			/** Cut enum type 
+			/** Cut enum type
 			 * Control bisection direction
 			 */
-			enum struct Direction 
-			{ 
+			enum struct Direction
+			{
 				Horizontal, /**< horizontal cuts */
 				Vertical /**< vertical cuts */
 			};
-			
+
 			std::atomic<Direction> dir{Direction::Vertical}; /*!< cut
 															direction */
 			std::atomic<Coordinate> l{-1}; /*!< Cut line coordinate */
@@ -31,7 +31,7 @@ namespace Novorado
 			 \dir cutline direction (default is vertical)
 			 \l corodinate of the cut line (default is invalid, negative
 			 */
-			CutLine(Direction dir=Direction::Vertical, 
+			CutLine(Direction dir=Direction::Vertical,
 					Coordinate l=-1) noexcept: dir{dir},l{l}{}
 
 			//! cutline ctor: cut rectangle in half(vertical by default)
@@ -39,21 +39,22 @@ namespace Novorado
 			 \r rectangle to cut
 			 \dir cut direction
 			 */
-			CutLine(CRectPt r,
+			CutLine(const Bridge::Rect&& r,
 				Direction dir=Direction::Vertical) noexcept:
 					dir{dir},
 					l(dir==Direction::Vertical?
-						r->hCenter():r->vCenter()){}
+						r.hCenter():r.vCenter()){}
 
 			//! Flip cut direction for any rectangle
-			void switchDir() noexcept 
-			{ 
-				if(dir==Direction::Vertical) dir=Direction::Horizontal; 
-					else dir=Direction::Horizontal; 
+			void switchDir() noexcept
+			{
+				if(dir==Direction::Vertical) dir=Direction::Horizontal;
+					else dir=Direction::Horizontal;
 			}
 
-			//! Split 
-			inline void split(Rect&& s,Rect&& r1,Rect&& r2) noexcept 
+			//! Split
+			inline void split(const Bridge::Rect&& s,
+				Bridge::Rect&& r1,Bridge::Rect&& r2) noexcept
 			{
 				r1=r2=s;
 				if(dir==Direction::Vertical) l=r1.right()=r2.left()=l;

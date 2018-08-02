@@ -13,7 +13,7 @@ Pin::~Pin()
 	//dtor
 }
 
-Pin::Pin(const Pin& other):Novorado::Object(other)
+Pin::Pin(const Pin& other):Bridge::Id(other)
 {
 	//copy ctor
 	// SetCell(other.GetCell());
@@ -22,7 +22,7 @@ Pin::Pin(const Pin& other):Novorado::Object(other)
 
 Pin& Pin::operator=(const Pin& rhs)
 {
-	Novorado::Object::operator=(rhs);
+	Bridge::Id::operator=(rhs);
 	//SetCell(rhs.GetCell());
 	//SetNet(rhs.GetNet());
 	return *this;
@@ -31,7 +31,7 @@ Pin& Pin::operator=(const Pin& rhs)
 #ifdef CHECK_LOGIC
 void Pin::SetName(const std::string& n)
 {
-	Novorado::Object::SetName(n);
+	Bridge::Id::SetName(n);
 	for(auto& p:m_Cell->m_Pins)
 	{
 		if(p.m_Net.isSet() && p.GetName()==n)

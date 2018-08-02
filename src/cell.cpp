@@ -1,4 +1,5 @@
 #include "cell.h"
+#include "partition.h"
 
 using namespace Novorado::Partition;
 
@@ -13,7 +14,7 @@ Cell::~Cell()
 	//dtor
 }
 
-Cell::Cell(Cell& rhs):Novorado::Object(rhs)
+Cell::Cell(Cell& rhs):Bridge::Id(rhs)
 {
 	m_Pins=rhs.m_Pins;
 	SetGain(rhs.GetGain());
@@ -23,7 +24,7 @@ Cell::Cell(Cell& rhs):Novorado::Object(rhs)
 	SetFixed(rhs.IsFixed());
 }
 
-Cell::Cell(const Cell& rhs):Novorado::Object(rhs)
+Cell::Cell(const Cell& rhs):Bridge::Id(rhs)
 {
 	m_Pins=rhs.m_Pins;
 	SetGain(rhs.GetGain());
@@ -35,7 +36,7 @@ Cell::Cell(const Cell& rhs):Novorado::Object(rhs)
 
 Cell& Cell::operator=(Cell& rhs)
 {
-	Novorado::Object::operator=(rhs);
+	Bridge::Id::operator=(rhs);
 	m_Pins=rhs.m_Pins;
 	SetGain(rhs.GetGain());
 	SetPartition(rhs.GetPartition());
@@ -58,13 +59,12 @@ void Cell::MoveToLocker(bool f)
 	flags.inLocker=f;
 }
 
-Partition* Cell::GetPartition() {
+std::shared_ptr<Partition> Cell::GetPartition() {
 	return m_PartitionPtr;
 }
 
-void Cell::SetPartition(Partition* p)
+void Cell::SetPartition(std::shared_ptr<Partition> p)
 {
-	if(m_PartitionPtr.isSet()) m_PartitionPtr.reset();
 	m_PartitionPtr=p;
 }
 

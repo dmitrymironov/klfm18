@@ -20,7 +20,7 @@ Net::Net(const Net& other)
 
 Net& Net::operator=(const Net& rhs)
 {
-	Novorado::Object::operator=(rhs);
+	Bridge::Id::operator=(rhs);
 
 	SetWeight(rhs.GetWeight());
 	m_Pins=rhs.m_Pins;
