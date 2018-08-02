@@ -81,7 +81,7 @@ void CellList::removeCell(Cell& cell)
 void CellList::insertCell(Iterator pos,Cell& cell)
 {
 	// Enlarge cells vector if needed
-	if(pos.idx>=cells.size())
+	if(static_cast<unsigned int>(pos.idx)>=cells.size())
 	{
 		// Should add 1 element
 		if(pos.idx!=cells.size()) dirty=true;

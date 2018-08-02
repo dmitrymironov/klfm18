@@ -58,7 +58,7 @@ namespace Novorado
 			struct Id
 			{
 
-				Id(Index index=-1, string name=string())
+				explicit Id(Index index=-1, string name=string())
 				{
 					SetId(index);
 					SetName(name);

@@ -104,7 +104,7 @@ distclean:
 
 clean:
 	@$(ECHO) Cleanning work folder
-	$(RM) -fr $(BIN) $(LEF_LIB) $(OBJ) config_*.* lef_*.* *~ *.hpp *.cpp *.output Doxyfile.bak
+	$(RM) -fr $(BIN) $(LEF_LIB) $(OBJ) config_*.* lef_*.* *~ *.hpp *.cpp *.output Doxyfile.bak lib obj bin
 	$(RM) -fr  lef_lexer.cpp config_parser.cpp config_lexer.cpp lef_parser.cpp shelby_wrap.cpp ui_*.h
 	@for i in $(LEF_LIB) $(ABSTRACT_LIB) $(LIBERTE_LIB) $(VERIFY_LIB) $(SPICE_LIB) $(DEF_LIB) $(VERILOG_LIB) $(GDS_LIB) $(CONFIG_LIB); do echo "Removing "$$i" .."; $(RM) -fr $$i $$i.dSYM; done
 	$(RM) -fr init_tcl.*
@@ -115,54 +115,6 @@ $(DOC): Doxyfile
 	@$(ECHO) Generating documentation
 	@$(MKDIR)
 	@-$(DOXYGEN) Doxyfile
-
-golden: FORCE
-	@for i in `$(FIND) test -name config -type f | $(XARGS) -n 1 $(DIRNAME)`; do \
-		if ! [ -f $$i/GOLDEN ]; then $(ECHO) Creating $$i/GOLDEN ..; $(TARGET) $$i/config > $$i/GOLDEN 2>&1; fi; \
-	done; \
-	for i in `$(FIND) test/lef -type f`; do \
-		if ! [ -f `$(DIRNAME) $$i`/GOLDEN ]; then $(ECHO) Creating `$(DIRNAME) $$i`/GOLDEN ..; $(LEF_TEST_APP) $$i > `$(DIRNAME) $$i`/GOLDEN 2>&1; fi; \
-	done; \
-	for i in `$(FIND) test -name run.sh -type f | $(XARGS) -n 1 $(DIRNAME)`; do \
-		if ! [ -f $$i/GOLDEN ]; then $(ECHO) Creating $$i/GOLDEN ..;	\
-		(cd $$i; PATH=${PATH} ./run.sh;) > $$i/GOLDEN 2>&1; \
-		fi; \
-	done;
-
-#	for i in `$(FIND) acceptance_test -name shelby.config -type f | $(XARGS) -n 1 $(DIRNAME)`; do \
-#		if ! [ -f $$i/GOLDEN ]; then $(ECHO) Creating $$i/GOLDEN ..; PATH=${PATH} $(TARGET) $$i/shelby.config > $$i/GOLDEN 2>&1; fi; \
-#	done;
-
-test: FORCE
-	@$(RM) -f .failed.tc
-	@for i in `$(FIND) test -name config -type f | $(XARGS) -n 1 $(DIRNAME)`; do \
-	if [ -f $$i/GOLDEN ]; then \
-		/bin/echo -n "$$i .. "; \
-		PATH=${PATH} $(TARGET) $$i/config > .tmp.golden 2>&1; \
-			if $(DIFF) .tmp.golden $$i/GOLDEN > /dev/null; then $(ECHO) ok; else $(ECHO) fail; $(ECHO) "Run following command:\n\nPATH=${PATH} $(TARGET) $$i/config\n\n"; echo "PATH=${PATH} $(TARGET) $$i/config">>.failed.tc; fi; \
-$(DIFF) .tmp.golden $$i/GOLDEN; \
-			$(RM) .tmp.golden; \
-		fi; \
-	done; \
-	for i in `$(FIND) test/lef -type f | $(GREP) -v GOLDEN`; do \
-		/bin/echo -n `$(DIRNAME) $$i`" .. "; \
-		$(LEF_TEST_APP) $$i > .tmp.golden 2>&1;  \
-		if $(DIFF) .tmp.golden `$(DIRNAME) $$i`/GOLDEN > /dev/null; then $(ECHO) ok; \
-		else $(ECHO) fail; $(ECHO)  "Run following command:\n\n$(LEF_TEST_APP) $$i\n\n"; echo "$(LEF_TEST_APP) $$i">>.failed.tc; fi; \
-		$(DIFF) .tmp.golden `$(DIRNAME) $$i`/GOLDEN; \
-		$(RM) .tmp.golden;  \
-	done; \
-	for i in `$(FIND) test -name run.sh | $(XARGS) -n 1 $(DIRNAME)`; do \
-		/bin/echo -n $$i" .. "; \
-		 (cd $$i; PATH=$(PATH) ./run.sh > .tmp.golden 2>&1); \
-		if $(DIFF) $$i/.tmp.golden $$i/GOLDEN > /dev/null; then $(ECHO) ok; \
-		else $(ECHO) fail; $(ECHO) "Run following command:\n\ncd $$i; PATH=${PATH} ./run.sh;\n\n"; \
-		echo "cd $$i; PATH=${PATH} ./run.sh;">>.failed.tc; fi; \
-		$(RM) $$i/.tmp.golden; \
-	done;
-	@if [ -f .failed.tc ]; then $(ECHO) "\nFailed "`$(WC) -l .failed.tc | $(AWK) '{ print $$1 }'`" testcases:"; $(CAT) .failed.tc; \
-		else $(ECHO) "\nGood job "`whoami`"! All tests have passed";  fi;
-	@$(RM) -f .failed.tc
 
 help: FORCE
 	@$(ECHO) "========================================================================"
