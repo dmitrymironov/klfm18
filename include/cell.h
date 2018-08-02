@@ -11,7 +11,7 @@ namespace Novorado
 	{
 		class Partition;
 		class Pin;
-				
+
 		using Square = long;
 
 		class Cell : public Bridge::Id
@@ -24,14 +24,14 @@ namespace Novorado
 				virtual ~Cell();
 				Square GetSquare() const { return m_Square; }
 				void SetSquare(Square val) { m_Square = val; }
-				std::shared_ptr<Partition> GetPartition();
-				void SetPartition(std::shared_ptr<Partition>);
+				Partition* GetPartition();
+				void SetPartition(Partition*);
 				Weight GetGain() const { return m_Gain; }
 				void SetGain(Weight w) { m_Gain=w; }
 				void IncrementGain(Weight w);
-				bool operator==(const Cell& c) const 
-				{ 
-					return c.GetId()==GetId(); 
+				bool operator==(const Cell& c) const
+				{
+					return c.GetId()==GetId();
 				}
 				void MoveToLocker(bool f=true);
 				bool IsInLocker() const { return flags.inLocker; }
@@ -49,7 +49,7 @@ namespace Novorado
 				} flags;
 
 				Weight m_Gain=0;
-				std::shared_ptr<Partition> m_PartitionPtr;
+				Partition* m_PartitionPtr;
 				Square m_Square=0;
 		};
 	}

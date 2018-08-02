@@ -1,5 +1,6 @@
 #include "cell.h"
 #include "partition.h"
+#include "pin.h"
 
 using namespace Novorado::Partition;
 
@@ -59,11 +60,11 @@ void Cell::MoveToLocker(bool f)
 	flags.inLocker=f;
 }
 
-std::shared_ptr<Partition> Cell::GetPartition() {
+Partition* Cell::GetPartition() {
 	return m_PartitionPtr;
 }
 
-void Cell::SetPartition(std::shared_ptr<Partition> p)
+void Cell::SetPartition(Partition* p)
 {
 	m_PartitionPtr=p;
 }

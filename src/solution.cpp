@@ -1,4 +1,5 @@
 #include "solution.h"
+#include "klfm18.h"
 
 using namespace Novorado::Partition;
 
@@ -10,7 +11,9 @@ Solution::Solution(Partition& _p1,Partition& _p2):p1(&_p1),p2(&_p2)
 	m_Recs.resize(0);
 }
 
-Solution::Solution(Partition& _p1,Partition& _p2,std::vector<Cell>& cells):p1(&_p1),p2(&_p2)
+Solution::Solution(Partition& _p1,Partition& _p2,std::vector<Cell>& cells):
+	p1(&_p1),
+	p2(&_p2)
 {
 	//ctor
 	g1=g2=0;

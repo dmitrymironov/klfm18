@@ -1,4 +1,8 @@
 #include "hypergraph.h"
+#include "pin.h"
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 using namespace Novorado::Partition;
 
@@ -12,7 +16,7 @@ NetlistHypergraph::NetlistHypergraph():bestSolution(p0,p1)
 NetlistHypergraph::~NetlistHypergraph()
 {
 	//dtor
-	m_AllCells.DestructiveReset();
+	m_AllCells.reset();
 }
 
 
@@ -171,31 +175,39 @@ Weight NetlistHypergraph::UpdateGains(Cell& c)
 	return rv;
 }
 
-NetlistHypergraph::CutStat NetlistHypergraph::GetStats(std::ofstream& o,bool fWrite)
+NetlistHypergraph::CutStat NetlistHypergraph::GetStats(
+	std::ofstream& o,bool fWrite)
 {
-	CutStat rv;
-	std::stringstream msg;
-	msg << "Cutting nets ";
-	if(fWrite) o << "Nets cutting: " << std::endl;
-	for(std::vector<Net>::iterator i=nets.begin();i!=nets.end();i++)
-	{
-		Net& net=*i;
-		Partition* p=NULL;
-		for(std::vector<Pin*>::iterator j=net.m_Pins.begin();j!=net.m_Pins.end();j++){
-			if(!p) {
-					p=(*j)->GetCell()->GetPartition();
-			}
-			else if(p!=(*j)->GetCell()->GetPartition()){
-				if(fWrite) o << net.GetName() << std::endl;
-				msg << net.GetName() << " ";
-				rv.m_NetCut++;
-				rv.m_totWeight+=net.GetWeight();
-				break;
-				}
-			}
-	}
-	msg << "=" << rv.m_NetCut << ", total weight is " << rv.m_totWeight;
-	std::cout << msg.str()  << std::endl;
-	if(fWrite) o << msg.str()  << std::endl;
-	return rv;
+    CutStat rv;
+    std::stringstream msg;
+    msg << "Cutting nets ";
+    if(fWrite)
+        o << "Nets cutting: " << std::endl;
+    for(std::vector<Net>::iterator i=nets.begin(); i!=nets.end(); i++)
+    {
+        Net& net=*i;
+        Partition* p=NULL;
+        for(std::vector<Pin*>::iterator j=net.m_Pins.begin();
+        	j!=net.m_Pins.end(); j++)
+        {
+            if(!p)
+            {
+                p=(*j)->GetCell()->GetPartition();
+            }
+            else if(p!=(*j)->GetCell()->GetPartition())
+            {
+                if(fWrite)
+                    o << net.GetName() << std::endl;
+                msg << net.GetName() << " ";
+                rv.m_NetCut++;
+                rv.m_totWeight+=net.GetWeight();
+                break;
+            }
+        }
+    }
+    msg << "=" << rv.m_NetCut << ", total weight is " << rv.m_totWeight;
+    std::cout << msg.str()  << std::endl;
+    if(fWrite)
+        o << msg.str()  << std::endl;
+    return rv;
 }

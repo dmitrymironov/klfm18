@@ -12,9 +12,9 @@ namespace Novorado
 			public:
 				struct CellRecord {
 					CellRecord():cell(NULL),gain(0),p(NULL){}
-					std::shared_ptr<Cell> cell;
+					Cell* cell;
 					Weight gain;
-					std::shared_ptr<Partition> p;
+					Partition* p;
 					};
 				Solution(Partition&,Partition&,std::vector<Cell>&);
 				Solution(Partition&,Partition&);
@@ -24,12 +24,16 @@ namespace Novorado
 
 				// The closer to 1 the better
 				bool IsInitial() const { return !s1||!s2; }
-				float Ratio() const { return float(std::max(s1,s2)) / float(std::min(s1,s2)); }
+
+				float Ratio() const
+				{
+					return float(std::max(s1,s2)) / float(std::min(s1,s2));
+				}
 
 				// Quality of the solution
 				Weight Cut() const { return g1+g2; }
 
-				void AddCell(std::shared_ptr<Cell>);
+				void AddCell(Cell*);
 
 				static bool SolutionImproved(
 					Solution&,
@@ -42,7 +46,7 @@ namespace Novorado
 				void WriteLockers(CellList& l0, CellList& l1);
 
 			protected:
-				std::shared_ptr<Partition> p1, p2;
+				Partition *p1, *p2;
 				Weight g1,g2;
 				Square s1,s2;
 				std::vector<CellRecord> m_Recs;

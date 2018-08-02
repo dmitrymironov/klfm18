@@ -1,6 +1,7 @@
 #include "celllist.h"
 #include <algorithm>
 #include <sstream>
+#include "partition.h"
 
 using namespace Novorado::Partition;
 
@@ -205,16 +206,16 @@ void CellList::TransferAllFrom(CellList& cl)
 
 std::string CellList::dbg()
 {
-	std::stringstream ss;
-	ss << " SQ=" << GetSquare() << " GAIN=" << GetSumGain();
-	for(auto i=begin();i!=end();i++)
-	   ss << " " << i->GetName() << (i->IsInLocker()?"*LOCK ":"") << " G" << i->GetGain() << "_p" << i->GetPartition()->GetId();
-	return ss.str();
+    std::stringstream ss;
+    ss << " SQ=" << GetSquare() << " GAIN=" << GetSumGain();
+    for(auto i=begin(); i!=end(); i++)
+        ss << " " << i->GetName() << (i->IsInLocker()?"*LOCK ":"")
+        	<< " G" << i->GetGain() << "_p" << i->GetPartition()->GetId();
+    return ss.str();
 }
 
 void CellList::SetCellGain(Weight g)
 {
- 	//std::for_each(begin(),end(),std::bind2nd(std::mem_fun_ref(&Cell::SetGain), g));
  	for(auto& cell:*this) cell.SetGain(g);
 }
 

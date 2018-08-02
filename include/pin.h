@@ -9,30 +9,30 @@ namespace Novorado
 	{
 		class Cell;
 		class Net;
-		
+
 		class Pin : public Bridge::Id
 		{
 		public:
-		
-			constexpr Pin() noexcept = default;
+
+			Pin() noexcept = default;
 			virtual ~Pin() noexcept = default;
 
-			constexpr Pin(const Pin&& other) noexcept;
-			constexpr Pin& operator=(const Pin&& other) noexcept;
+			Pin(const Pin& other) noexcept;
+			Pin& operator=(const Pin& other) noexcept;
 
-			auto GetCell() noexcept 
+			auto GetCell() noexcept
 			{
 				return m_Cell;
 			}
-			
-			void SetCell(std::shared_ptr<Cell> val) noexcept 
+
+			void SetCell(std::shared_ptr<Cell> val) noexcept
 			{
 				m_Cell = val;
 			}
 
 			auto GetNet() noexcept {return m_Net;}
-			
-			constexpr void SetNet(std::shared_ptr<Net> val) noexcept;
+
+			void SetNet(std::shared_ptr<Net> val) noexcept;
 
 			#ifdef CHECK_LOGIC
 			// Overloading object method for consistency checking

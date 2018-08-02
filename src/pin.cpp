@@ -2,27 +2,14 @@
 
 using namespace Novorado::Partition;
 
-Pin::Pin()
-{
-	SetId(-1);
-	//ctor
-	SetCell(NULL);
-	SetNet(NULL);
-}
-
-Pin::~Pin()
-{
-	//dtor
-}
-
-Pin::Pin(const Pin& other):Bridge::Id(other)
+Pin::Pin(const Pin& other) noexcept:Bridge::Id(other)
 {
 	//copy ctor
 	// SetCell(other.GetCell());
 	// SetNet(other.GetNet());
 }
 
-Pin& Pin::operator=(const Pin& rhs)
+Pin& Pin::operator=(const Pin& rhs) noexcept
 {
 	Bridge::Id::operator=(rhs);
 	//SetCell(rhs.GetCell());
@@ -47,7 +34,7 @@ void Pin::SetName(const std::string& n)
 }
 #endif // CHECK_LOGIC
 
-void Pin::SetNet(Net* val)
+void Pin::SetNet(std::shared_ptr<Net> val) noexcept
 {
 	m_Net=val;
 }

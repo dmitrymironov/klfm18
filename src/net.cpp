@@ -1,4 +1,6 @@
 #include "net.h"
+#include "pin.h"
+#include "cell.h"
 
 using namespace Novorado::Partition;
 
@@ -35,7 +37,7 @@ void Net::AddPin(Pin* p)
 	m_Pins.push_back(p);
 }
 
-unsigned int Net::Dim(Partition* p)
+auto Net::Dim(Partition* p)
 {
 	unsigned int rv=0;
 	for(Pin* pin:m_Pins){

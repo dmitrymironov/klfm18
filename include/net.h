@@ -28,12 +28,12 @@ namespace Novorado
 				{
 					return m_Weight;
 				}
-				void AddPin(std::shared_ptr<Pin>);
+				void AddPin(Pin*);
 				auto Dim() const
 				{
 					return m_Pins.size();
 				}
-				auto Dim(std::shared_ptr<Partition>);
+				auto Dim(Partition*);
 				std::vector<Pin*> m_Pins;
 
 			protected:

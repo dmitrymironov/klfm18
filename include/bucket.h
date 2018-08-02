@@ -15,9 +15,9 @@ namespace Novorado
 				virtual ~Bucket();
 				Bucket(const Bucket& other);
 				Bucket& operator=(const Bucket& other);
-				void SetPartition(std::shared_ptr<Partition> p) 
-				{ 
-					m_Partition=p; 
+				void SetPartition(Partition* p)
+				{
+					m_Partition=p;
 				}
 				void FillByGain(CellList&);
 				void dbg(long);
@@ -29,7 +29,7 @@ namespace Novorado
 			private:
 				Square m_Square;
 				Weight m_SumGain;
-				std::shared_ptr<Partition> m_Partition;
+				Partition* m_Partition;
 				Bucket();
 				friend class Partition;
 		};
