@@ -73,6 +73,7 @@ OBJS+=\
         $(OBJ)/partition.o \
         $(OBJ)/pin.o \
         $(OBJ)/solution.o \
+        $(OBJ)/iteration.o \
 		$(OBJ)/klfm18.o
 
 -include $(OBJ)/*.depend
@@ -86,11 +87,12 @@ $(TARGET) : $(OBJS)
 	@$(ECHO) Linking $@
 	@$(GCC) -shared -o $@ $(OBJS)
 	@$(STRIP_CMD)
+	chmod -x $@
 	$(DONE)
 
 $(TEST_APP): $(OBJ)/test.o
 	@$(ECHO) Linking $@
-	@$(GCC) -o $@ $(OBJS) -lstdc++
+	@$(GCC) -o $@ $< -lstdc++
 	@$(STRIP_CMD)
 	$(DONE)
 
@@ -122,6 +124,9 @@ $(DOC): Doxyfile
 	@$(MKDIR)
 	@-$(DOXYGEN) Doxyfile
 
+test: $(TEST_APP)
+	$(TEST_APP)
+	
 help: FORCE
 	@$(ECHO) "========================================================================"
 	@$(ECHO) "Run 'make' or 'make release' to make optimized '"$(TARGET)"' executable "
