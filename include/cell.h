@@ -13,7 +13,7 @@ namespace Novorado
 				
 		using Square = long;
 
-		class Cell : public IdBridge
+		class Cell : public Bridge::Id
 		{
 			public:
 				Cell();

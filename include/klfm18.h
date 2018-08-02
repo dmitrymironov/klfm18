@@ -21,7 +21,7 @@ namespace Novorado
 		struct part
 		{
 			CutLine cut;
-			std::vector<Cell*,RectBridge> bin1, bin2;
+			std::vector<Cell*,Bridge::Id> bin1, bin2;
 			
 			constexpr void reserve(size_t sz) noexcept
 			{ 
@@ -94,8 +94,6 @@ namespace Novorado
 				Square m_Square;
 		};
 
-		template<class Cell,class Partition,
-			typename Square=long,typename Weight=long>
 		class Bucket : public std::map<Weight,CellList>
 		{
 			public:
@@ -121,8 +119,7 @@ namespace Novorado
 				friend class Partition;
 		};
 
-		template <class Id> 
-		class Partition : public Id
+		class Partition : public IdBridge
 		{
 			public:
 				Partition();

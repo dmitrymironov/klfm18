@@ -10,7 +10,7 @@ namespace Novorado
 		class Cell;
 		class Net;
 		
-		class Pin : public IdBridge
+		class Pin : public Bridge::Id
 		{
 		public:
 		

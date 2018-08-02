@@ -12,7 +12,7 @@ namespace Novorado
 		
 		using Weight = long;
 
-		class Net : public IdBridge
+		class Net : public Bridge::Id
 		{
 			public:
 				Net();
