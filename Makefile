@@ -61,7 +61,18 @@ strip_all: $(TARGET)
 	@$(STRIP) $(LEF_TEST_APP)
 
 OBJS+=\
-	$(OBJ)/klfm18.o
+        $(OBJ)/bin.o \
+        $(OBJ)/bridge.o \
+        $(OBJ)/bucket.o \
+        $(OBJ)/cell.o \
+        $(OBJ)/celllist.o \
+        $(OBJ)/cutline.o \
+        $(OBJ)/hypergraph.o \
+        $(OBJ)/net.o \
+        $(OBJ)/partition.o \
+        $(OBJ)/pin.o \
+        $(OBJ)/solution.o \
+		$(OBJ)/klfm18.o
 
 -include $(OBJ)/*.depend
 
