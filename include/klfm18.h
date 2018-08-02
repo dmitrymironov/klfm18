@@ -1,10 +1,8 @@
-#ifndef _PARTITION_H
-#define _PARTITION_H
+#ifndef _KLFM18_H
+#define _KLFM18_H
 
-#include "celllist.h"
-#include "bucket.h"
 #include "bin.h"
-#include "cutline.h"
+#include "partition.h"
 
 namespace Novorado
 {
@@ -14,25 +12,6 @@ namespace Novorado
 		constexpr auto MIN_BIN_SIZE = 2;
 		// Square treshhold 0.1=10%
 		constexpr auto SQUARE_TOLERANCE = 0.1;
-
-		class Partition : public IdBridge
-		{
-			public:
-				Partition();
-				virtual ~Partition();
-
-				CellList m_Locker;
-				Bucket m_Bucket;
-
-				Square GetSquare();
-				Weight GetGain();
-
-				void preset(const std::vector<Cell*>& fix,const std::vector<Cell*>& ini);
-
-			protected:
-			private:
-				friend class NetlistHypergraph;
-		};
 
 		class CellMove
 		{
@@ -166,5 +145,5 @@ namespace Novorado
 		};
 	};
 };
-#endif//_PARTITION_H
+#endif//_KLFM18_H
 

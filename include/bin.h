@@ -2,6 +2,7 @@
 #define _BIN_H
 
 #include "cell.h"
+#include "cutline.h"
 
 namespace Novorado
 {
