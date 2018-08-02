@@ -26,7 +26,7 @@ namespace Novorado
 		struct part
 		{
 			CutLine cut;
-			std::vector<Cell*,Rect> bin1, bin2;
+			std::vector<Cell*,RectBridge> bin1, bin2;
 			
 			constexpr void reserve(size_t sz) noexcept
 			{ 
@@ -40,7 +40,7 @@ namespace Novorado
 			}
 		};
 
-		class Pin : public Id
+		class Pin : public IdBridge
 		{
 		public:
 		
@@ -75,7 +75,7 @@ namespace Novorado
 			std::shared_ptr<Net> m_Net;
 		};
 
-		class Net : public Id
+		class Net : public IdBridge
 		{
 			public:
 				Net();
@@ -94,9 +94,7 @@ namespace Novorado
 				Weight m_Weight;
 		};
 
-		template <class Id,class Partition,class Pin,
-			typename Square=long,typename Weight=long> 
-		class Cell : public Id
+		class Cell : public IdBridge
 		{
 			public:
 				Cell();
@@ -135,7 +133,6 @@ namespace Novorado
 				Square m_Square=0;
 		};
 
-		template<class Cell,typename Square=long,typename Weight=long> 
 		class CellList
 		{
 			std::vector<long> cellId2cells;

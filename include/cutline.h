@@ -31,7 +31,7 @@ namespace Novorado
 			 \dir cutline direction (default is vertical)
 			 \l corodinate of the cut line (default is invalid, negative
 			 */
-			constexpr CutLine(Direction dir=Direction::Vertical, 
+			CutLine(Direction dir=Direction::Vertical, 
 					Coordinate l=-1) noexcept: dir{dir},l{l}{}
 
 			//! cutline ctor: cut rectangle in half(vertical by default)
@@ -39,21 +39,21 @@ namespace Novorado
 			 \r rectangle to cut
 			 \dir cut direction
 			 */
-			constexpr CutLine(CRectPt r,
+			CutLine(CRectPt r,
 				Direction dir=Direction::Vertical) noexcept:
 					dir{dir},
 					l(dir==Direction::Vertical?
 						r->hCenter():r->vCenter()){}
 
 			//! Flip cut direction for any rectangle
-			constexpr void switchDir() noexcept 
+			void switchDir() noexcept 
 			{ 
 				if(dir==Direction::Vertical) dir=Direction::Horizontal; 
 					else dir=Direction::Horizontal; 
 			}
 
 			//! Split 
-			inline constexpr void split(CRectPt s,
+			inline void split(CRectPt s,
 				RectPt r1,RectPt r2) noexcept 
 			{
 				*r1=*r2=*s;
