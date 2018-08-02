@@ -2,6 +2,9 @@
 #define _PARTITION_H
 
 #include "cutline.h"
+#include "pin.h"
+#include "net.h"
+#include "cell.h"
 #include <vector>
 #include <list>
 
@@ -13,14 +16,6 @@ namespace Novorado
 		constexpr auto MIN_BIN_SIZE = 2;
 		// Square treshhold 0.1=10%
 		constexpr auto SQUARE_TOLERANCE = 0.1;
-		
-		using Square = long;
-		using Weight = long;
-		
-		class Pin;
-		class Net;
-		class Cell;
-		class Partition;
 				
 		/*! Partition bin */
 		struct part
@@ -38,99 +33,6 @@ namespace Novorado
 			{ 
 				bin1.box=r1;bin2.box=r2; 
 			}
-		};
-
-		class Pin : public IdBridge
-		{
-		public:
-		
-			constexpr Pin() noexcept = default;
-			virtual ~Pin() noexcept = default;
-
-			constexpr Pin(const Pin&& other) noexcept;
-			constexpr Pin& operator=(const Pin&& other) noexcept;
-
-			constexpr auto GetCell() noexcept 
-			{
-				return m_Cell;
-			}
-			
-			constexpr void SetCell(std::shared_ptr<Cell> val) noexcept 
-			{
-				m_Cell = val;
-			}
-
-			constexpr auto GetNet() noexcept {return m_Net;}
-			
-			constexpr void SetNet(std::shared_ptr<Net> val) noexcept;
-
-			#ifdef CHECK_LOGIC
-			// Overloading object method for consistency checking
-			virtual void SetName(const std::string&);
-			#endif // CHECK_LOGIC
-
-		protected:
-		private:
-			std::shared_ptr<Cell> m_Cell;
-			std::shared_ptr<Net> m_Net;
-		};
-
-		class Net : public IdBridge
-		{
-			public:
-				Net();
-				virtual ~Net();
-				Net(const Net&& other);
-				Net& operator=(const Net&& other);
-				void SetWeight(Weight w) { m_Weight = w; }
-				Weight GetWeight() const { return m_Weight; }
-				void AddPin(std::shared_ptr<Pin>);
-				auto Dim() const { return m_Pins.size(); }
-				auto Dim(std::shared_ptr<Partition>);
-				std::vector<Pin*> m_Pins;
-
-			protected:
-			private:
-				Weight m_Weight;
-		};
-
-		class Cell : public IdBridge
-		{
-			public:
-				Cell();
-				Cell(Cell& other);
-				Cell(const Cell& other);
-				Cell& operator=(Cell&);
-				virtual ~Cell();
-				Square GetSquare() const { return m_Square; }
-				void SetSquare(Square val) { m_Square = val; }
-				std::shared_ptr<Partition> GetPartition();
-				void SetPartition(std::shared_ptr<Partition>);
-				Weight GetGain() const { return m_Gain; }
-				void SetGain(Weight w) { m_Gain=w; }
-				void IncrementGain(Weight w);
-				bool operator==(const Cell& c) const 
-				{ 
-					return c.Id::GetId()==Id::GetId(); 
-				}
-				void MoveToLocker(bool f=true);
-				bool IsInLocker() const { return flags.inLocker; }
-				bool IsFixed() const { return flags.fixed; }
-				void SetFixed(bool f=true) { flags.fixed=f; }
-
-				std::list<Pin> m_Pins;
-
-			private:
-				struct Flags
-				{
-					Flags():inLocker(false),fixed(false){}
-					bool inLocker	: 1;
-					bool fixed	: 1;
-				} flags;
-
-				Weight m_Gain=0;
-				std::shared_ptr<Partition> m_PartitionPtr;
-				Square m_Square=0;
 		};
 
 		class CellList
