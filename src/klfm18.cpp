@@ -102,56 +102,6 @@ std::vector<Cell*> KLFM::C(const npvec& v)
 }
 
 
-CellMove::CellMove(Partition& _p0,Partition& _p1):p0(_p0),p1(_p1)
-{
-	//ctor
-}
-
-CellMove::~CellMove()
-{
-	//dtor
-}
-
-
-
-RandomDistribution::RandomDistribution(Partition& _p0,Partition& _p1):CellMove(_p0,_p1)
-{
-   //ctor
-	run();
-}
-
-RandomDistribution::~RandomDistribution()
-{
-	//dtor
-}
-
-void RandomDistribution::run()
-{
-	const long HRM = RAND_MAX / 2;
-	// Move all non-fixed elements to first partition p0
-	for(auto i=p1.m_Locker.begin();i!=p1.m_Locker.end();i++)
-	{
-        if(!i->IsFixed()) p0.m_Locker.splice(p0.m_Locker.end(),p1.m_Locker,i--);
-	}
-
-	for(auto& cell:p0.m_Locker) cell.SetPartition(&p0);
-
-	while(p0.m_Locker.GetSquare()>p1.m_Locker.GetSquare())
-	{
-		for(auto i=p0.m_Locker.begin();
-			i!=p0.m_Locker.end() && p0.m_Locker.GetSquare()>p1.m_Locker.GetSquare();
-			i++)
-		{
-			if(!i->IsFixed() && std::rand()>HRM)
-			{
-				i->SetPartition(&p1);
-				p0.m_Locker.TransferTo(i--,p1.m_Locker);
-		   }
-		}
-	}
-}
-
-
 #ifdef KLFM_TEST
 class Test6 : public NetlistHypergraph
 {
