@@ -185,15 +185,6 @@ class Test6 : public NetlistHypergraph
         }
         } m_Files;
 
-    Pin& getNextPin(Cell& c1, const std::string& name=""){
-        c1.m_Pins.emplace_back();
-        Pin& newPin=c1.m_Pins.back();
-        newPin.SetId(c1.m_Pins.size());
-        newPin.SetCell(&c1);
-        newPin.SetName(name); // that will trigger consistency check
-        return newPin;
-        }
-
  #ifdef  ALGORITHM_VERBOSE
    void printNetlist(){
         for(Cell& c:*m_AllCells) {
@@ -215,7 +206,6 @@ class Test6 : public NetlistHypergraph
 
 public:
     Test6(std::string fn):m_Files(fn){
-        std::srand(2015);
 
         // Should be enough for testing to prevent reallocation and memory corruption
         m_AllCells=new std::vector<Cell>;

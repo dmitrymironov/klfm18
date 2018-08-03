@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "pin.h"
 
 using namespace Novorado::Partition;
 
@@ -14,6 +15,16 @@ struct TestBuilder
 		H = std::make_shared<NetlistHypergraph>();
 
 		ReadGraphFromFile(fn);
+	}
+
+    Pin& getNextPin(Cell& c1, const std::string& name="")
+    {
+        c1.m_Pins.emplace_back();
+        Pin& newPin=c1.m_Pins.back();
+        newPin.SetId(c1.m_Pins.size());
+        newPin.SetCell(&c1);
+        newPin.SetName(name); // that will trigger consistency check
+        return newPin;
 	}
 
     void MakeCell(const std::string & cellName, const std::string& ssq, unsigned int& idx )
@@ -34,9 +45,9 @@ struct TestBuilder
         tmpCell.SetSquare(sq);
 
         H->m_AllCells->push_back(tmpCell);
-        instances.init(&(*H->m_AllCells)[0],H->m_AllCells->size());
+        H->instances.init(&(*H->m_AllCells)[0],H->m_AllCells->size());
 
-        H->m_AllCells->back().SetPartition(&p0);
+        H->m_AllCells->back().SetPartition(&H->p0);
         #ifdef CHECK_LOGIC
         if(!sq) {
             std::stringstream msg;
@@ -145,11 +156,11 @@ struct TestBuilder
         f.close();
 
         unsigned int netIdx=0;
-        nets.resize(tmpNets.size());
+        H->nets.resize(tmpNets.size());
 
         for(std::vector< std::vector<std::string> >::iterator k=tmpNets.begin();
         	k!=tmpNets.end();k++,netIdx++)
-            	MakeNet(nets[netIdx],*k,netIdx);
+            	MakeNet(H->nets[netIdx],*k,netIdx);
 
         std::cout << " done" << std::endl;
     }
@@ -161,6 +172,8 @@ struct TestBuilder
 
 int main(int, char**)
 {
+	std::srand(2018);
+
 	// Load hypergraph
 	auto Graph = std::move(TestBuilder("test/graph6/6.net").H);
 

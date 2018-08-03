@@ -34,7 +34,7 @@ void Pin::SetName(const std::string& n)
 }
 #endif // CHECK_LOGIC
 
-void Pin::SetNet(std::shared_ptr<Net> val) noexcept
+void Pin::SetNet(Net* val) noexcept
 {
 	m_Net=val;
 }

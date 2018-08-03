@@ -8,7 +8,7 @@ namespace Novorado
 {
 	template <class V> class Bracket
 	{
-		V* head;
+		V* head{nullptr};
 		size_t m_size=0;
 		public:
 
@@ -44,7 +44,7 @@ namespace Novorado
 
 			Bracket(V* v,size_t sz):head(v),m_size(sz) {}
 
-			void init(V* v,size_t sz){ head.reset();head=(v);m_size=(sz); }
+			void init(V* v,size_t sz){ head=(v);m_size=(sz); }
 
 			Bracket(Bracket& ano):head(ano.head),m_size(ano.m_size) { }
 

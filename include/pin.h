@@ -14,8 +14,8 @@ namespace Novorado
 		{
 		public:
 
-			Pin() noexcept = default;
-			virtual ~Pin() noexcept = default;
+			Pin() = default;
+			virtual ~Pin() = default;
 
 			Pin(const Pin& other) noexcept;
 			Pin& operator=(const Pin& other) noexcept;
@@ -25,14 +25,14 @@ namespace Novorado
 				return m_Cell;
 			}
 
-			void SetCell(std::shared_ptr<Cell> val) noexcept
+			void SetCell(Cell* val) noexcept
 			{
 				m_Cell = val;
 			}
 
 			auto GetNet() noexcept {return m_Net;}
 
-			void SetNet(std::shared_ptr<Net> val) noexcept;
+			void SetNet(Net* val) noexcept;
 
 			#ifdef CHECK_LOGIC
 			// Overloading object method for consistency checking
@@ -41,8 +41,8 @@ namespace Novorado
 
 		protected:
 		private:
-			std::shared_ptr<Cell> m_Cell;
-			std::shared_ptr<Net> m_Net;
+			Cell* m_Cell;
+			Net* m_Net;
 		};
 	}
 }

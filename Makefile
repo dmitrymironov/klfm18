@@ -92,7 +92,7 @@ $(TARGET) : $(OBJS)
 
 $(TEST_APP): $(OBJ)/test.o
 	@$(ECHO) Linking $@
-	@$(GCC) -o $@ $< -lstdc++
+	@$(GCC) -o $@ $< -lstdc++ $(TARGET)
 	@$(STRIP_CMD)
 	$(DONE)
 
