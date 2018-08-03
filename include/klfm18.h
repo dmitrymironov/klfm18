@@ -13,48 +13,6 @@ namespace Novorado
 		// Square treshhold 0.1=10%
 		constexpr auto SQUARE_TOLERANCE = 0.1;
 
-		class CellMove
-		{
-			public:
-				CellMove(Partition&,Partition&);
-				virtual ~CellMove();
-			protected:
-				virtual void run() = 0;
-				Partition& p0;
-				Partition& p1;
-		};
-
-		class Iteration : public CellMove
-		{
-			public:
-				Iteration(NetlistHypergraph*);
-				virtual ~Iteration();
-				Weight GetImprovement() const { return m_Improvement; }
-				void moveCell(Partition*,Partition*);
-
-				void moveLeft() { moveCell(&p1,&p0); }
-				void moveRight() { moveCell(&p0,&p1); }
-
-				void run();
-
-		   protected:
-
-			private:
-				Weight m_Improvement;
-				std::shared_ptr<NetlistHypergraph> graph;
-		};
-
-		class RandomDistribution : public CellMove
-		{
-			public:
-				RandomDistribution(Partition&,Partition&);
-				virtual ~RandomDistribution();
-			protected:
-				void run();
-			private:
-		};
-
-
 		//////////////////////////////////////////////////////////////////////////////////////////
 		//
 		// Algorihtm interface
