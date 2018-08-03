@@ -1,6 +1,168 @@
 #include "klfm18.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
+using namespace Novorado::Partition;
+
+struct TestBuilder
+{
+	std::shared_ptr<NetlistHypergraph> H;
+
+	TestBuilder(const std::string& fn)
+	{
+		H = std::make_shared<NetlistHypergraph>();
+
+		ReadGraphFromFile(fn);
+	}
+
+    void MakeCell(const std::string & cellName, const std::string& ssq, unsigned int& idx )
+    {
+        #ifdef CHECK_LOGIC
+        if(m_name2cell.find(cellName)!=m_name2cell.end()) {
+            std::stringstream msg;
+            msg << "Duplicated cell '" << cellName << "' at line " << current_ln;
+            throw std::logic_error(msg.str());
+            }
+        #endif
+        Square sq=0;
+        std::stringstream s(ssq);
+        s >> sq;
+        Cell tmpCell;
+        tmpCell.SetId(idx++);
+        tmpCell.SetName(cellName);
+        tmpCell.SetSquare(sq);
+
+        H->m_AllCells->push_back(tmpCell);
+        instances.init(&(*H->m_AllCells)[0],H->m_AllCells->size());
+
+        H->m_AllCells->back().SetPartition(&p0);
+        #ifdef CHECK_LOGIC
+        if(!sq) {
+            std::stringstream msg;
+            msg << "Cell '" << cellName << "' has illegal square '" << ssq << "'";
+            throw std::logic_error(msg.str());
+            }
+        #endif
+        m_name2cell[cellName]=&H->m_AllCells->back();
+    }
+
+    void MakeNet(Net& net,const std::vector<std::string>& words, int idx)
+    {
+        net.SetId(idx);
+        int cnt=0;
+        Weight w;
+        std::stringstream s;
+        std::string str1;
+        for(std::string str:words)
+        {
+            switch(cnt++)
+            {
+                case 0:
+                        net.SetName(str);
+#ifdef  ALGORITHM_VERBOSE
+                        std::cout << "Creating net '" << str << "' Weight="  << std::flush;
+#endif
+                        break;
+                case 1: s.str(str);
+                        s >> w;
+#ifdef  ALGORITHM_VERBOSE
+                       std::cout << w << " " << std::flush;
+#endif
+                        net.SetWeight(w);
+                      break;
+                default:
+                		if(!str1.length()) str1=str;
+                        	else MakePin(str1,str,net),str1.clear();
+                        break;
+            }
+        }
+#ifdef  ALGORITHM_VERBOSE
+        std::cout << std::endl;
+#endif
+    }
+
+    void MakePin(const std::string& cellName,const std::string& pinName, Net& net)
+    {
+        std::map<std::string,Cell*>::iterator i=m_name2cell.find(cellName);
+        #ifdef CHECK_LOGIC
+        if(i==m_name2cell.end()) {
+            throw std::logic_error("Incorrect cell name");
+            }
+        #endif
+        Cell& cell=*(i->second);
+        Pin& pin=getNextPin(cell,pinName);
+        pin.SetNet(&net);
+        net.AddPin(&pin);
+#ifdef  ALGORITHM_VERBOSE
+        std::cout << cell.GetName() << ":" << pin.GetName() << " ";
+#endif
+    }
+
+    void ReadGraphFromFile(const std::string& fn)
+    {
+        std::cout << "Reading from '" << fn << "' .. " << std::endl;
+        std::ifstream f(fn.c_str());
+        current_ln=0;
+        unsigned int cell_idx=0;
+        std::vector< std::vector<std::string> > tmpNets;
+        while(!f.eof())
+        {
+            current_ln++;
+            std::string l;
+            std::vector<std::string> words;
+            std::getline(f,l);
+            if(f.eof() && l=="") break;
+            std::stringstream ss(l);
+            while (ss>>l) words.push_back(l);
+            #ifdef CHECK_LOGIC
+            if(words.size()<2) {
+                std::cout << "Error at " << fn << ":" << current_ln
+                	<< " '" << l << "'" << std::endl;
+                throw std::logic_error("Parsing error");
+                }
+            #endif
+            if(words.size()==2)
+            {
+
+				if(words.front()=="fixedleft")
+				{
+					Cell* c=(m_name2cell[words.back()]);
+					c->SetFixed();
+					c->SetPartition(&H->p0);
+					continue;
+				} else if(words.front()=="fixedright")
+					{
+						Cell* c=(m_name2cell[words.back()]);
+						c->SetFixed();
+						c->SetPartition(&H->p1);
+						continue;
+					}
+
+            	MakeCell(words[0],words[1],cell_idx);
+            } else tmpNets.push_back(words);
+        }
+        f.close();
+
+        unsigned int netIdx=0;
+        nets.resize(tmpNets.size());
+
+        for(std::vector< std::vector<std::string> >::iterator k=tmpNets.begin();
+        	k!=tmpNets.end();k++,netIdx++)
+            	MakeNet(nets[netIdx],*k,netIdx);
+
+        std::cout << " done" << std::endl;
+    }
+
+    private:
+		std::map<std::string,Cell*> m_name2cell;
+		long current_ln{-1};
+};
 
 int main(int, char**)
 {
+	// Load hypergraph
+	auto Graph = std::move(TestBuilder("test/graph6/6.net").H);
+
 	return 0;
 }

@@ -8,14 +8,12 @@ namespace Novorado
 {
 	namespace Partition
 	{
-		class NetlistHypergraph
+		struct NetlistHypergraph
 		{
-			protected:
-				friend class Iteration;
+
 				std::shared_ptr<std::vector<Cell>> m_AllCells;
 				Novorado::Bracket<Cell> pins, instances;
 
-			public:
 				NetlistHypergraph();
 				virtual ~NetlistHypergraph();
 				std::vector<Net> nets;
