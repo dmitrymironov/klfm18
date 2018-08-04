@@ -1,4 +1,5 @@
 #include "pin.h"
+#include "cell.h"
 
 using namespace Novorado::Partition;
 
@@ -23,7 +24,7 @@ void Pin::SetName(const std::string& n)
 	Bridge::Id::SetName(n);
 	for(auto& p:m_Cell->m_Pins)
 	{
-		if(p.m_Net.isSet() && p.GetName()==n)
+		if(p.m_Net!=nullptr && p.GetName()==n)
 		{
 			throw std::logic_error(std::logic_error(
 				std::string("Attempting to connect ")+m_Cell->GetName()+":"+

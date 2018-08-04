@@ -9,6 +9,8 @@ OBJ=.obj
 LIB=$(RELEASE)/lib
 DOC=$(RELEASE)/doc
 
+DEFINES=-DCHECK_LOGIC
+
 # Target list
 DIRS=$(BIN) $(LIB) $(OBJ)
 

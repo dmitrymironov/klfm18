@@ -11,6 +11,7 @@ NetlistHypergraph::NetlistHypergraph():bestSolution(p0,p1)
 	//ctop
 	p0.SetId(0);
 	p1.SetId(1);
+	m_AllCells = std::make_shared<std::vector<Cell>>();
 }
 
 NetlistHypergraph::~NetlistHypergraph()

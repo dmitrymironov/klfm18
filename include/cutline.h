@@ -53,8 +53,8 @@ namespace Novorado
 			}
 
 			//! Split
-			inline void split(const Bridge::Rect&& s,
-				Bridge::Rect&& r1,Bridge::Rect&& r2) noexcept
+			inline void split(const Bridge::Rect& s,
+				Bridge::Rect& r1,Bridge::Rect& r2) noexcept
 			{
 				r1=r2=s;
 				if(dir==Direction::Vertical) l=r1.right()=r2.left()=l;

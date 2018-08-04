@@ -55,7 +55,9 @@ struct TestBuilder
             throw std::logic_error(msg.str());
             }
         #endif
-        m_name2cell[cellName]=&H->m_AllCells->back();
+        // Quadratic complexity readressing, bad.
+        for(auto& cell: *H->m_AllCells)
+        	m_name2cell[cell.GetName()]=&cell;
     }
 
     void MakeNet(Net& net,const std::vector<std::string>& words, int idx)
@@ -93,16 +95,16 @@ struct TestBuilder
 #endif
     }
 
-    void MakePin(const std::string& cellName,const std::string& pinName, Net& net)
+    void MakePin(const std::string& cellName,const std::string& pinName,
+    	Net& net)
     {
-        std::map<std::string,Cell*>::iterator i=m_name2cell.find(cellName);
+        auto i=m_name2cell.find(cellName);
         #ifdef CHECK_LOGIC
         if(i==m_name2cell.end()) {
             throw std::logic_error("Incorrect cell name");
             }
         #endif
-        Cell& cell=*(i->second);
-        Pin& pin=getNextPin(cell,pinName);
+        Pin& pin=getNextPin(*i->second,pinName);
         pin.SetNet(&net);
         net.AddPin(&pin);
 #ifdef  ALGORITHM_VERBOSE
@@ -135,7 +137,14 @@ struct TestBuilder
             #endif
             if(words.size()==2)
             {
-
+            	#ifdef CHECK_LOGIC
+            	if(
+            		words.front().substr(0,5) == "fixed" &&
+            		m_name2cell.find(words.back()) == m_name2cell.end()
+            		){
+            		throw std::logic_error("Invalid input file");
+            	}
+            	#endif//CHECK_LOGIC
 				if(words.front()=="fixedleft")
 				{
 					Cell* c=(m_name2cell[words.back()]);
