@@ -5,23 +5,6 @@
 
 using namespace Novorado::Partition;
 
-/* classes building needs to be refactored
-void CellList::copyWithoutFixed(npvec& v)
-{
-	v.clear();
-	v.reserve(size());
-	for(auto& i:*this) if(!i.IsFixed()) v.push_back(i);
-}
-
-CellList::operator std::vector<const Novorado::Netlist::Node*>()
-{
-	std::vector<const Novorado::Netlist::Node*> rv;
-	rv.resize(cells.size());
-	long idx=0;for(auto* cell:cells) rv[idx++]=*cell;
-	return rv;
-}
-*/
-
 void CellList::init(const std::vector<Cell*>& v)
 {
 	for(auto* cell:v) insertCell(end(),*cell);
