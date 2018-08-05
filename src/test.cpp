@@ -8,11 +8,11 @@ using namespace Novorado::Partition;
 
 struct TestBuilder
 {
-	std::shared_ptr<NetlistHypergraph> H;
+	std::shared_ptr<KLFM> H;
 
 	TestBuilder(const std::string& fn)
 	{
-		H = std::make_shared<NetlistHypergraph>();
+		H = std::make_shared<KLFM>();
 
 		ReadGraphFromFile(fn);
 	}
@@ -57,7 +57,9 @@ struct TestBuilder
         #endif
         // Quadratic complexity readressing, bad.
         for(auto& cell: *H->m_AllCells)
+        {
         	m_name2cell[cell.GetName()]=&cell;
+        }
     }
 
     void MakeNet(Net& net,const std::vector<std::string>& words, int idx)
@@ -114,7 +116,7 @@ struct TestBuilder
 
     void ReadGraphFromFile(const std::string& fn)
     {
-        std::cout << "Reading from '" << fn << "' .. " << std::endl;
+        std::cout << "Reading from '" << fn << "' .. " << std::flush;
         std::ifstream f(fn.c_str());
         current_ln=0;
         unsigned int cell_idx=0;
@@ -185,6 +187,8 @@ int main(int, char**)
 
 	// Load hypergraph
 	auto Graph = std::move(TestBuilder("test/graph6/6.net").H);
+
+	Graph->Partition();
 
 	return 0;
 }

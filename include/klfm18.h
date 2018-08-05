@@ -19,22 +19,12 @@ namespace Novorado
 		//
 		//////////////////////////////////////////////////////////////////////////////////////////
 
-		#ifdef _REFACTORING_
 		class KLFM : public NetlistHypergraph
 		{
-			std::vector<Cell*> C(const npvec&);
-			void CreateGraph(const Novorado::Netlist::NetList*,const part&, part&);
-
 			public:
 				// Partition result is returned in last reference, it is also used as initial solution
-				KLFM(
-						const Novorado::Netlist::NetList*, // Source netlist
-						const part& fixed, // Fixed part of bins (pre-allocated)
-						part& initial // Initial distribution & resulting partition
-						);
+				void Partition();
 		};
-		#endif//_REFACTORING_
 	};
 };
 #endif//_KLFM18_H
-

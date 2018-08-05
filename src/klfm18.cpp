@@ -1,5 +1,5 @@
 
-#ifdef _REFACTORING_
+//#ifdef _REFACTORING_
 
 //#define ALGORITHM_VERBOSE
 
@@ -13,13 +13,16 @@
 #endif // KLFM_TEST
 
 #include "klfm18.h"
+#include "iteration.h"
 #include <sstream>
 
 using namespace Novorado::Partition;
 
-KLFM::KLFM(const Novorado::Netlist::NetList* netlist,const part& fixed, part& initial)
+void KLFM::Partition()
 {
-	CreateGraph(netlist,fixed,initial);
+	InitializeLockers();
+
+	RandomDistribution(p0,p1);
 
 	FillBuckets();
 
@@ -41,66 +44,7 @@ KLFM::KLFM(const Novorado::Netlist::NetList* netlist,const part& fixed, part& in
 		std::cout << "ITERATION " << iter_cnt << ", IMPROVEMENT " << step.GetImprovement() << std::endl;
 		#endif
 		}
-
-	// Copy over the best soltion
-	p0.m_Locker.copyWithoutFixed(initial.bin1);
-	p1.m_Locker.copyWithoutFixed(initial.bin2);
 }
-
-void KLFM::CreateGraph(const Novorado::Netlist::NetList* netlist,const part& fixed, part& initial)
-{
-	// Allocate data, init arrays
-	m_AllCells=new std::vector<Cell>(netlist->GetNumInstances()+netlist->GetNumPins());
-	instances.init(&(*m_AllCells)[0],netlist->GetNumInstances());
-	pins.init(&(*m_AllCells)[netlist->GetNumInstances()],netlist->GetNumPins());
-	nets.resize(netlist->GetNumNets());
-
-	// Set id's and pointers
-	Bridge::Id idx=0;
-	idx=0;for(auto& cell: *m_AllCells) cell.SetId(idx++);
-	idx=0;for(auto& net: nets) net.SetId(idx++);
-	idx=0;for(auto& cell:instances) cell.SetNode(netlist->instance(idx++));
-	idx=0;for(auto& pin:pins) pin.SetNode(netlist->externalPin(idx++));
-
-	// Pre-set fixed pins and initial distribution
-	p0.preset(C(fixed.bin1),C(initial.bin1)),p1.preset(C(fixed.bin2),C(initial.bin2));
-
-	// Build netlist and create pins
-	for(auto const* aNet:Novorado::Netlist::nets(netlist))
-	{
-		auto& net=nets[aNet->GetId()];
-		for(long t=0;t<aNet->GetNumTerminals();t++)
-		{
-			const Novorado::Netlist::Terminal* T=aNet->terminal(t);
-			std::shared_ptr<Cell> klfm_cell;
-			if(T->isExternalPin()) klfm_cell=&pins[T->externalPin()->GetId()];
-				else klfm_cell=&instances[T->instance()->GetId()];
-			klfm_cell->m_Pins.emplace_back();
-			Pin& pin=klfm_cell->m_Pins.back();
-			pin.SetNet(&net),pin.SetCell(klfm_cell);
-			net.AddPin(&pin);
-		}
-	}
-}
-
-std::vector<Cell*> KLFM::C(const npvec& v)
-{
-	std::vector<Cell*> rv(v.size());
-	long idx=0;
-	for(auto* node:v)
-	{
-		if(node->isInstance())
-		{
-			rv[idx++]=&instances[node->GetId()];
-		}
-		else if(node->isExternalPin())
-		{
-			rv[idx++]=&pins[node->GetId()];
-		}
-	}
-	return rv;
-}
-
 
 #ifdef KLFM_TEST
 class Test6 : public NetlistHypergraph
@@ -225,4 +169,4 @@ public:
 Test6 t_6("/home/dmi/soft/shelby/test/6.net");
 #endif
 
-#endif//_REFACTORING_
+//#endif//_REFACTORING_

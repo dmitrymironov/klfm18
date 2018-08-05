@@ -20,6 +20,17 @@ NetlistHypergraph::~NetlistHypergraph()
 	m_AllCells.reset();
 }
 
+void NetlistHypergraph::InitializeLockers()
+{
+	// Buckets get fill from the lockers
+	for(Cell& c:*m_AllCells)
+	{
+		if(c.GetPartition()==&p1) p1.m_Locker.insertCell(p1.m_Locker.end(),c);
+			else p0.m_Locker.insertCell(p0.m_Locker.end(),c);
+
+		c.MoveToLocker();// Mark that cell is moved to the locker
+	}
+}
 
 void NetlistHypergraph::FillBuckets()
 {

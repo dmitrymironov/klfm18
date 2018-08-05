@@ -20,6 +20,7 @@ namespace Novorado
 				Partition p0,p1;
 				Solution bestSolution;
 
+				void InitializeLockers();
 				void FillBuckets();
 				Weight UpdateGains(Cell&);
 

@@ -16,10 +16,14 @@ class CellList
 public:
     class Iterator
     {
-        std::shared_ptr<CellList> L;
+        CellList* L{nullptr};
         long idx=-1;
         friend CellList;
     public:
+
+    	virtual ~Iterator()
+    	{
+    	}
 
         Iterator(CellList* l,long _idx):
             L(l),idx(_idx)

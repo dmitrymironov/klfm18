@@ -49,7 +49,7 @@ namespace Novorado
 				} flags;
 
 				Weight m_Gain=0;
-				Partition* m_PartitionPtr;
+				Partition* m_PartitionPtr{nullptr};
 				Square m_Square=0;
 		};
 	}
