@@ -9,7 +9,6 @@ namespace Novorado
 {
 	namespace Partition
 	{
-
 		/*! Cutline class to facilitate hierarchial cuts */
 		struct CutLine
 		{

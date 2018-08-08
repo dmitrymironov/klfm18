@@ -114,7 +114,7 @@ distclean:
 
 clean:
 	@$(ECHO) Cleanning work folder
-	$(RM) -fr $(BIN) $(LEF_LIB) $(OBJ) config_*.* lef_*.* *~ *.hpp *.cpp *.output Doxyfile.bak lib obj bin
+	$(RM) -fr $(BIN) $(LEF_LIB) $(OBJ) config_*.* lef_*.* *~ *.hpp *.cpp *.output Doxyfile.bak lib obj bin doc
 	$(RM) -fr  lef_lexer.cpp config_parser.cpp config_lexer.cpp lef_parser.cpp shelby_wrap.cpp ui_*.h
 	@for i in $(LEF_LIB) $(ABSTRACT_LIB) $(LIBERTE_LIB) $(VERIFY_LIB) $(SPICE_LIB) $(DEF_LIB) $(VERILOG_LIB) $(GDS_LIB) $(CONFIG_LIB); do echo "Removing "$$i" .."; $(RM) -fr $$i $$i.dSYM; done
 	$(RM) -fr init_tcl.*

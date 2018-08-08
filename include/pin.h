@@ -20,15 +20,9 @@ namespace Novorado
 			Pin(const Pin& other) noexcept;
 			Pin& operator=(const Pin& other) noexcept;
 
-			auto GetCell() noexcept
-			{
-				return m_Cell;
-			}
+            Cell* GetCell() noexcept;
 
-			void SetCell(Cell* val) noexcept
-			{
-				m_Cell = val;
-			}
+            void SetCell(Cell* val) noexcept;
 
 			auto GetNet() noexcept {return m_Net;}
 

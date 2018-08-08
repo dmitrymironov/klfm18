@@ -18,6 +18,16 @@ Pin& Pin::operator=(const Pin& rhs) noexcept
 	return *this;
 }
 
+Cell* Pin::GetCell() noexcept
+{
+    return m_Cell;
+}
+
+void Pin::SetCell(Cell *val) noexcept
+{
+    m_Cell = val;
+}
+
 #ifdef CHECK_LOGIC
 void Pin::SetName(const std::string& n)
 {

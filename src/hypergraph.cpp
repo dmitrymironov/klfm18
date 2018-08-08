@@ -45,7 +45,7 @@ void NetlistHypergraph::FillBuckets()
 		#endif
 		// compute gains
 		for(Pin* p:net.m_Pins){
-			Cell& cell = *p->GetCell();
+            auto& cell = *p->GetCell();
 
 			if(cell.GetPartition()==&p0) left+=net.GetWeight();
 			else if(cell.GetPartition()==&p1) right+=net.GetWeight();
