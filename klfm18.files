@@ -1,3 +1,4 @@
+src/testbuilder.cpp
 include/bin.h
 include/bracket.h
 include/bridge.h
@@ -12,6 +13,8 @@ include/net.h
 include/partition.h
 include/pin.h
 include/solution.h
+include/testbuilder.h
+include/testbuilder.h
 src/bin.cpp
 src/bridge.cpp
 src/bucket.cpp

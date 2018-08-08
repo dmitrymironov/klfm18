@@ -92,9 +92,13 @@ $(TARGET) : $(OBJS)
 	chmod -x $@
 	$(DONE)
 
-$(TEST_APP): $(OBJ)/test.o $(TARGET)
+TEST_OBJS+=\
+	   $(OBJ)/test.o \
+	   $(OBJ)/testbuilder.o
+
+$(TEST_APP): $(TEST_OBJS) $(TARGET)
 	@$(ECHO) Linking $@
-	@$(GCC) -o $@ $< -lstdc++ $(TARGET)
+	@$(GCC) -o $@ $(TEST_OBJS) -lstdc++ $(TARGET)
 	@$(STRIP_CMD)
 	$(DONE)
 
