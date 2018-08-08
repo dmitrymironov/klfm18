@@ -63,19 +63,17 @@ struct GraphCompare
 {
 	explicit GraphCompare(NetlistHypergraph& hg, const std::string& i)
 	{
-		std::ifstream left(i+"_left"), right(i+"_right");
-
 		fGood =
-				CompareSet(hg.p0.m_Locker,left)
+				CompareSet(hg.p0.m_Locker,std::ifstream(i+"_left"))
 								&&
-				CompareSet(hg.p1.m_Locker,right);
+				CompareSet(hg.p1.m_Locker,std::ifstream(i+"_right"));
 	}
 
 	constexpr operator bool() const noexcept { return fGood; }
 
 	private:
 
-		bool CompareSet(CellList& l, std::ifstream& f)
+		bool CompareSet(CellList& l, std::ifstream&& f)
 		{
 			std::set<std::string> allCells;
 			for(auto& cell: l)
