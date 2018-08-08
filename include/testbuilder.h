@@ -5,31 +5,36 @@
 #include <klfm18.h>
 
 namespace Novorado {
-namespace Partition {
 
-struct TestBuilder
-{
-    std::shared_ptr<KLFM> H;
+	namespace Partition {
 
-    TestBuilder(const std::string& fn);
+		struct TestBuilder
+		{
+				std::shared_ptr<KLFM> H;
 
-    Pin& getNextPin(Cell& c1, const std::string& name="");
+				TestBuilder(const std::string &fn);
 
-    void MakeCell(const std::string & cellName, const std::string& ssq,
-                  unsigned int& idx );
+				Pin &getNextPin(Cell &c1, const std::string &name="");
 
-    void MakeNet(Net& net,const std::vector<std::string>& words, int idx);
+				void MakeCell(const std::string &cellName,
+							  const std::string &ssq,
+							  unsigned int &idx );
 
-    void MakePin(const std::string& cellName,const std::string& pinName,
-        Net& net);
+				void MakeNet(Net &net,
+							 const std::vector<std::string> &words,
+							 int idx);
 
-    void ReadGraphFromFile(const std::string& fn);
+				void MakePin(const std::string &cellName,
+							 const std::string &pinName,
+							 Net &net);
 
-    private:
-        std::map<std::string,Cell*> m_name2cell;
-        long current_ln{-1};
-};
-}
+				void ReadGraphFromFile(const std::string &fn);
+
+			private:
+				std::map<std::string, Cell *> m_name2cell;
+				long current_ln{-1};
+		};
+	}
 }
 
 #endif // TESTBUILDER_H

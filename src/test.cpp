@@ -4,6 +4,8 @@
 #include <sstream>
 #include "pin.h"
 #include "testbuilder.h"
+#include <set>
+#include <algorithm>
 
 using namespace Novorado::Partition;
 
@@ -55,7 +57,48 @@ struct GraphWriter
         // write best solution
         hg.GetStats(m_Files.GetStat(),true);
 	}
+};
 
+struct GraphCompare
+{
+	explicit GraphCompare(NetlistHypergraph& hg, const std::string& i)
+	{
+		std::ifstream left(i+"_left"), right(i+"_right");
+
+		fGood =
+				CompareSet(hg.p0.m_Locker,left)
+								&&
+				CompareSet(hg.p1.m_Locker,right);
+	}
+
+	constexpr operator bool() const noexcept { return fGood; }
+
+	private:
+
+		bool CompareSet(CellList& l, std::ifstream& f)
+		{
+			std::set<std::string> allCells;
+			for(auto& cell: l)
+			{
+				allCells.insert(cell.GetName());
+			}
+
+			while(f.good())
+			{
+				std::string nextCell;
+				f >> nextCell;
+				if(!nextCell.empty() && allCells.find(nextCell)==allCells.end())
+				{
+					std::cerr << nextCell << " is in wrong partition"
+							  << std::endl;
+					return false;
+				}
+				if(f.eof()) break;
+			}
+			return true;
+		}
+
+		bool fGood{false};
 };
 
 int main(int, char**)
@@ -67,7 +110,14 @@ int main(int, char**)
 
 	Graph->Partition();
 
+	// Write out resulted graph
 	GraphWriter(*Graph,"test/graph6/6");
+
+	// Compare graph vs GOLDEN test case
+	std::cout
+			<< "Test "
+			<< (GraphCompare(*Graph,"test/graph6/GOLDEN/6")?"Passed":"Failed")
+			<< std::endl;
 
 	return 0;
 }

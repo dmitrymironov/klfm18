@@ -143,6 +143,7 @@ private:
     Weight m_SumGain;
     Square m_Square;
 };
+
 }
 }
 #endif//_CELLLIST_H
