@@ -98,7 +98,7 @@ TEST_OBJS+=\
 
 $(TEST_APP): $(TEST_OBJS) $(TARGET)
 	@$(ECHO) Linking $@
-	@$(GCC) -o $@ $(TEST_OBJS) -lstdc++ $(TARGET)
+	@$(GCC) -o $@ $(TEST_OBJS) -lstdc++ $(TARGET) -lgtest
 	@$(STRIP_CMD)
 	$(DONE)
 

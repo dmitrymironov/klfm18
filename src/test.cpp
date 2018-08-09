@@ -6,6 +6,7 @@
 #include "testbuilder.h"
 #include <set>
 #include <algorithm>
+#include <gtest/gtest.h>
 
 using namespace Novorado::Partition;
 
@@ -99,23 +100,30 @@ struct GraphCompare
 		bool fGood{false};
 };
 
-int main(int, char**)
+bool graph_test(std::string&& name)
 {
+
 	std::srand(2018);
 
 	// Load hypergraph
-	auto Graph = std::move(TestBuilder("test/graph6/6.net").H);
+	std::string path="test/graph"+name+"/";
+	auto Graph = std::move(TestBuilder(path+name+".net").H);
 
 	Graph->Partition();
 
 	// Write out resulted graph
-	GraphWriter(*Graph,"test/graph6/6");
+	GraphWriter(*Graph,path+name);
 
-	// Compare graph vs GOLDEN test case
-	std::cout
-			<< "Test "
-			<< (GraphCompare(*Graph,"test/graph6/GOLDEN/6")?"Passed":"Failed")
-			<< std::endl;
+	return GraphCompare(*Graph,path+"/GOLDEN/"+name);
+}
 
-	return 0;
+TEST(GRAPH6,Ttt)
+{
+	ASSERT_TRUE(graph_test("6"));
+}
+
+int main(int argc, char **argv)
+{
+	testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
 }
