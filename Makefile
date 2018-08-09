@@ -129,16 +129,15 @@ $(LIB):; @$(MKDIR)
 
 distclean:
 	@$(ECHO) Cleanning distribution
-	$(RM) -fr $(RELEASE) $(BIN) $(OBJ) config_*.* lef_*.* *~ $(DOC) Doxyfile.bak $(LIB)
-	@-(cd liberty_parse-2.6; make distclean; $(RM) -fr a.out* attr_enum.h attr_lookup attr_lookup.c group_enum.h group_lookup group_lookup.c syntax_decls.c syntax_decls.h) > /dev/null 2>&1
+	$(RM) -fr $(RELEASE) $(BIN) $(OBJ) *~ $(DOC) Doxyfile.bak $(LIB)
+	@-($(RM) -fr a.out*) > /dev/null 2>&1
 	@$(ECHO) Done
 
 clean:
 	@$(ECHO) Cleanning work folder
-	$(RM) -fr $(BIN) $(LEF_LIB) $(OBJ) config_*.* lef_*.* *~ *.hpp *.cpp *.output Doxyfile.bak lib obj bin doc
-	$(RM) -fr  lef_lexer.cpp config_parser.cpp config_lexer.cpp lef_parser.cpp shelby_wrap.cpp ui_*.h
-	@for i in $(LEF_LIB) $(ABSTRACT_LIB) $(LIBERTE_LIB) $(VERIFY_LIB) $(SPICE_LIB) $(DEF_LIB) $(VERILOG_LIB) $(GDS_LIB) $(CONFIG_LIB); do echo "Removing "$$i" .."; $(RM) -fr $$i $$i.dSYM; done
-	$(RM) -fr init_tcl.*
+	$(RM) -fr $(BIN) $(LEF_LIB) $(OBJ) *~ *.hpp *.cpp *.output Doxyfile.bak lib obj bin doc
+	$(RM) -fr  ui_*.h
+	@for i in $(CONFIG_LIB); do echo "Removing "$$i" .."; $(RM) -fr $$i $$i.dSYM; done
 
 doc: $(DOC)
 
@@ -158,10 +157,10 @@ help: FORCE
 	@$(ECHO) "'make golden' to create GOLDEN files for new tests"
 	@$(ECHO) "'make help' to print this message"
 	@$(ECHO) "'make clean' to clean local build, binaries and obj's"
-	@$(ECHO) "'make distclean' to deep clean the build staff including liberty"
+	@$(ECHO) "'make distclean' to deep clean"
 	@$(ECHO) "========================================================================"
 
 FORCE:
 
 # If you want to see intermediary files, uncomment next line; It cause repeated compilation
-#.PRECIOUS: lef_lexer.cpp config_parser.cpp config_lexer.cpp lef_parser.cpp shelby_wrap.cpp
+#.PRECIOUS: shelby_wrap.cpp
