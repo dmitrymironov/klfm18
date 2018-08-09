@@ -38,7 +38,8 @@ $(info Mac build)
 		AWK=$(TOOLS_BIN)/awk
 		WC=$(TOOLS_BIN)/wc
 		CAT=cat
-		DYN_EXT=so
+		DYN_EXT=dynlib
+		COPY=cp -f
 else
 		CXXFLAGS+=-fPIC
 		TOOLS_BIN=/usr/bin
@@ -60,6 +61,7 @@ else
 		CAT=cat
 		DYN_EXT=so
 		CXXFLAGS+-fmax-errors=5
+		COPY=cp -f
 endif
 
 TARGET=$(LIB)/libklfm18.$(DYN_EXT)
@@ -148,6 +150,10 @@ $(DOC): Doxyfile
 
 test: $(TEST_APP)
 	$(TEST_APP)
+
+install: test
+	@$(ECHO) Copying $(TARGET) to $(OPENCAD)/lib/
+	@$(COPY) $(TARGET) $(OPENCAD)/lib/
 	
 help: FORCE
 	@$(ECHO) "========================================================================"
