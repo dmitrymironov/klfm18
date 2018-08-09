@@ -117,9 +117,9 @@ bool graph_test(std::string&& name)
 	return GraphCompare(*Graph,path+"/GOLDEN/"+name);
 }
 
-TEST(GRAPH6,Ttt)
+TEST(graph6golden,KLFM)
 {
-	ASSERT_TRUE(graph_test("6"));
+	EXPECT_TRUE(graph_test("6"));
 }
 
 int main(int argc, char **argv)
