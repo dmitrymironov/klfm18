@@ -64,12 +64,9 @@ strip_all: $(TARGET)
 	@$(STRIP) $(LEF_TEST_APP)
 
 OBJS+=\
-        $(OBJ)/bin.o \
-        $(OBJ)/bridge.o \
         $(OBJ)/bucket.o \
         $(OBJ)/cell.o \
         $(OBJ)/celllist.o \
-        $(OBJ)/cutline.o \
         $(OBJ)/hypergraph.o \
         $(OBJ)/net.o \
         $(OBJ)/partition.o \
