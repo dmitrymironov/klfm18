@@ -10,7 +10,6 @@ namespace Novorado
 	{
 		struct NetlistHypergraph
 		{
-
 				std::shared_ptr<std::vector<Cell>> m_AllCells;
 				Novorado::Bracket<Cell> pins, instances;
 

@@ -20,6 +20,25 @@ SYS := $(shell g++ -dumpmachine)
 
 ifneq (, $(findstring darwin, $(SYS)))
 $(info Mac build)
+		CXXFLAGS+=-fPIC
+		TOOLS_BIN=/usr/bin
+		ECHO=/bin/echo
+		MD=/bin/mkdir
+		GCC=g++
+		DOXYGEN=$(TOOLS_BIN)/doxygen
+		STRIP=$(TOOLS_BIN)/strip
+		AR=$(TOOLS_BIN)/ar
+		RM=rm
+		MAKE=$(TOOLS_BIN)/make
+		FIND=$(TOOLS_BIN)/find
+		XARGS=$(TOOLS_BIN)/xargs
+		DIRNAME=$(TOOLS_BIN)/dirname
+		DIFF=$(TOOLS_BIN)/diff
+		GREP=$(TOOLS_BIN)/grep
+		AWK=$(TOOLS_BIN)/awk
+		WC=$(TOOLS_BIN)/wc
+		CAT=cat
+		DYN_EXT=so
 else
 		CXXFLAGS+=-fPIC
 		TOOLS_BIN=/usr/bin
@@ -40,6 +59,7 @@ else
 		WC=$(TOOLS_BIN)/wc
 		CAT=cat
 		DYN_EXT=so
+		CXXFLAGS+-fmax-errors=5
 endif
 
 TARGET=$(LIB)/libklfm18.$(DYN_EXT)
@@ -47,7 +67,7 @@ TEST_APP=$(BIN)/klfm_test
 
 INCLUDES+=-Iinclude/ -I$(LIBERTY_INCLUDE) -I.
 
-CXXFLAGS+=$(INCLUDES) $(DEFINES) -std=c++17 $(WARNINGS) -fmax-errors=5
+CXXFLAGS+=$(INCLUDES) $(DEFINES) -std=c++17 $(WARNINGS) 
 
 debug: $(DIRS) $(TARGET) $(TEST_APP)
 release : $(DIRS) $(DOC) $(TARGET)  $(TEST_APP)

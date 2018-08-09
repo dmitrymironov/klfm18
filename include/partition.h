@@ -25,7 +25,7 @@ namespace Novorado
 
 			protected:
 			private:
-				friend class NetlistHypergraph;
+				friend struct NetlistHypergraph;
 		};
 	}
 }

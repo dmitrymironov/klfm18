@@ -56,7 +56,7 @@ namespace Novorado
 			V& operator[](Index idx)
 			{
 				check(idx);
-				return head.get()[idx];
+				return	(*head)[idx];
 			}
 
 			Iterator begin() { return Iterator(this,0); }
